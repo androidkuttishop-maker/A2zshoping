@@ -145,11 +145,11 @@
                 <!-- Limited Time Deal Extra Settings -->
                 <div id="limitedDealFields" class="hide bg-red-50 p-2 rounded-lg border border-red-200 space-y-1.5">
                     <div>
-                        <label class="text-[9px] font-bold text-red-700">Special Offer Price (₹) [ஸ்பெஷல் தள்ளுபடி விலை]</label>
-                        <input type="number" id="adminSplPrice" placeholder="Eg: 99" class="w-full border p-1 rounded-md text-[11px] bg-white">
+                        <label class="text-[9px] font-bold text-red-700">Special Offer Price (₹)</label>
+                        <input type="number" id="adminSplPrice" placeholder="Eg: 100" class="w-full border p-1 rounded-md text-[11px] bg-white">
                     </div>
                     <div>
-                        <label class="text-[9px] font-bold text-red-700">Offer Expiry Date & Time [ஆபர் முடியும் நேரம்]</label>
+                        <label class="text-[9px] font-bold text-red-700">Offer Expiry Date & Time</label>
                         <input type="datetime-local" id="adminExpiry" class="w-full border p-1 rounded-md text-[11px] bg-white">
                     </div>
                 </div>
@@ -331,13 +331,17 @@
                 } else if (p.offer === '50% OFF') {
                     effectivePrice = Math.round(p.price * 0.5);
                     displayPrice = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${effectivePrice}</span>`;
+                    offerBadge = `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">50% OFF</span>`;
                 } else if (p.offer === '25% OFF') {
                     effectivePrice = Math.round(p.price * 0.75);
                     displayPrice = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${effectivePrice}</span>`;
+                    offerBadge = `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">25% OFF</span>`;
                 } else if (p.offer === '1+1 Free') {
                     displayPrice = `<span class="text-emerald-600 font-bold">₹${p.price} (1+1 Free)</span>`;
+                    offerBadge = `<span class="absolute top-1 left-1 bg-emerald-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">1+1 Free</span>`;
                 } else if (p.offer === '2+2 Free') {
                     displayPrice = `<span class="text-emerald-600 font-bold">₹${p.price} (2+2 Free)</span>`;
+                    offerBadge = `<span class="absolute top-1 left-1 bg-emerald-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">2+2 Free</span>`;
                 } else if (p.offer) {
                     offerBadge = `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">${p.offer}</span>`;
                 }
@@ -614,7 +618,7 @@
         }
 
         window.placeOrderWhatsApp = async function() {
-            const name = document.getElementById('custName.value') || document.getElementById('custName').value;
+            const name = document.getElementById('custName').value;
             const phone = document.getElementById('custPhone').value;
             const address = document.getElementById('custAddress').value;
             const payMethod = document.getElementById('payMethod').value;
@@ -685,7 +689,7 @@
 
             if (tab === 'home') document.getElementById('homeTab').classList.remove('hide');
             if (tab === 'shop') document.getElementById('shopTab').classList.remove('hide');
-            if (tab === 'cart') document.getElementById('cartTab'.replace(/'/g, "")).classList.remove('hide');
+            if (tab === 'cart') document.getElementById('cartTab').classList.remove('hide');
         }
 
         loadProducts();
