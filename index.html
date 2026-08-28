@@ -16,7 +16,6 @@
 </head>
 <body class="pb-20">
 
-    <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50 px-4 py-2 flex justify-between items-center">
         <h1 id="headerTitle" class="text-base font-black text-purple-600 tracking-tight cursor-pointer">Asa Shopping</h1>
         <div class="flex items-center gap-2">
@@ -28,12 +27,9 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <main class="max-w-md mx-auto p-2.5 space-y-2">
         
-        <!-- HOME TAB -->
         <div id="homeTab" class="space-y-2">
-            <!-- Festival Greeting Banners -->
             <div id="bannerContainer" class="flex gap-2 overflow-x-auto pb-0.5 no-scrollbar scroll-smooth">
                 <div class="bg-gradient-to-r from-emerald-400 to-teal-500 rounded-lg p-2 text-white shadow-sm min-w-full flex-shrink-0 flex flex-col justify-between h-14">
                     <div class="flex justify-between items-center">
@@ -65,7 +61,6 @@
                 </div>
             </div>
 
-            <!-- Categories -->
             <div class="flex gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
                 <button onclick="filterCategory('All')" class="cat-btn bg-purple-600 text-white px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow">All</button>
                 <button onclick="filterCategory('Supermarket')" class="cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm">Supermarket</button>
@@ -74,11 +69,10 @@
                 <button onclick="filterCategory('Electronics')" class="cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm">Electronics</button>
             </div>
 
-            <!-- Products Section -->
             <div>
                 <div class="flex justify-between items-center mb-1.5">
                     <h3 class="text-xs font-bold text-gray-800">Products</h3>
-                    <span class="text-[8px] text-purple-600 font-semibold bg-purple-50 px-1.5 py-0.5 rounded">Live Firebase</span>
+                    <span class="text-[8px] text-purple-600 font-semibold bg-purple-50 px-1.5 py-0.5 rounded">Live</span>
                 </div>
                 <div id="productGrid" class="grid grid-cols-2 gap-2">
                     <p class="col-span-2 text-center text-gray-400 py-4 text-[11px]">Loading products from Firebase...</p>
@@ -86,13 +80,11 @@
             </div>
         </div>
 
-        <!-- SHOP TAB -->
         <div id="shopTab" class="hide space-y-2.5">
             <h2 class="text-xs font-bold text-gray-800">Shop Catalog</h2>
             <div id="shopProductGrid" class="grid grid-cols-2 gap-2"></div>
         </div>
 
-        <!-- CART TAB -->
         <div id="cartTab" class="hide space-y-2.5">
             <h2 class="text-xs font-bold text-gray-800">Your Cart</h2>
             <div id="cartItemsList" class="space-y-1.5">
@@ -107,7 +99,6 @@
             </div>
         </div>
 
-        <!-- ADMIN PANEL -->
         <div id="adminPanel" class="hide bg-white p-2.5 rounded-xl shadow-lg border border-purple-100 space-y-3">
             <div class="flex justify-between items-center border-b pb-1">
                 <h2 class="text-[11px] font-bold text-purple-700" id="adminPanelTitle">⚙️ Admin Panel - Add Product</h2>
@@ -163,14 +154,12 @@
                 <button type="submit" id="adminSubmitBtn" class="w-full bg-purple-600 text-white py-1.5 rounded-xl font-bold shadow text-[11px]">Save Product to Firebase</button>
             </form>
 
-            <!-- Admin Product Management List for Edit/Delete -->
             <div class="border-t pt-2 mt-2">
                 <h3 class="text-[10px] font-bold text-gray-700 mb-1">Manage Existing Products (Edit / Delete)</h3>
                 <div id="adminProductManageList" class="space-y-1 max-h-40 overflow-y-auto"></div>
             </div>
         </div>
 
-        <!-- CHECKOUT SECTION -->
         <div id="checkoutSection" class="hide bg-white p-2.5 rounded-xl shadow-lg border space-y-2">
             <h2 class="text-xs font-bold text-gray-800">Checkout Details</h2>
             <div class="space-y-1.5">
@@ -191,7 +180,6 @@
 
     </main>
 
-    <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-1.5 px-6 flex justify-around items-center z-40 max-w-md mx-auto">
         <button onclick="switchTab('home')" class="flex flex-col items-center text-purple-600 font-bold text-[9px]">
             <span class="text-sm">🏠</span> Home
@@ -204,7 +192,6 @@
         </button>
     </nav>
 
-    <!-- LOGIN MODAL -->
     <div id="loginModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white p-3 rounded-xl w-full max-w-xs space-y-2">
             <h3 class="text-xs font-bold text-gray-800">Customer Login</h3>
@@ -214,7 +201,6 @@
         </div>
     </div>
 
-    <!-- APP LOGIC & FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get, push, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -250,6 +236,25 @@
             }, 3000);
         }
 
+        function startCountdownTimers() {
+            setInterval(() => {
+                const timers = document.querySelectorAll('.countdown-timer');
+                timers.forEach(timer => {
+                    let time = parseInt(timer.getAttribute('data-time'));
+                    if (time > 0) {
+                        time--;
+                        timer.setAttribute('data-time', time);
+                        let hrs = Math.floor(time / 3600);
+                        let mins = Math.floor((time % 3600) / 60);
+                        let secs = time % 60;
+                        timer.textContent = `⏳ Ends in ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    } else {
+                        timer.textContent = "⏳ Offer Expired";
+                    }
+                });
+            }, 1000);
+        }
+
         window.loadProducts = async function() {
             try {
                 const snapshot = await get(ref(db, 'products'));
@@ -265,6 +270,7 @@
                     });
                     renderProducts();
                     renderAdminProductManageList();
+                    startCountdownTimers();
                 } else {
                     grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 py-4 text-[11px]">No products found in Firebase.</p>';
                 }
@@ -288,32 +294,41 @@
 
             filtered.forEach(p => {
                 const isOut = p.stock <= 0;
-                const offerBadge = p.offer ? `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">${p.offer}</span>` : '';
+                let offerBadge = '';
                 
-                let finalPrice = p.price;
-                let priceDisplayHtml = `₹${p.price}`;
+                if (p.offer === 'Limited Time Deal') {
+                    offerBadge = `<span class="absolute top-1 left-1 bg-red-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow countdown-timer" data-time="7200">⏳ Ends in 02:00:00</span>`;
+                } else if (p.offer) {
+                    offerBadge = `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">${p.offer}</span>`;
+                }
+                
+                let displayPrice = `₹${p.price}`;
 
                 if (p.offer === '50% OFF') {
-                    finalPrice = Math.round(p.price * 0.5);
-                    priceDisplayHtml = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${finalPrice}</span>`;
+                    let finalPrice = Math.round(p.price * 0.5);
+                    displayPrice = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${finalPrice}</span>`;
                 } else if (p.offer === '25% OFF') {
-                    finalPrice = Math.round(p.price * 0.75);
-                    priceDisplayHtml = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${finalPrice}</span>`;
+                    let finalPrice = Math.round(p.price * 0.75);
+                    displayPrice = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${finalPrice}</span>`;
+                } else if (p.offer === '1+1 Free') {
+                    displayPrice = `<span class="text-emerald-600 font-bold">₹${p.price} (1+1 Free)</span>`;
+                } else if (p.offer === '2+2 Free') {
+                    displayPrice = `<span class="text-emerald-600 font-bold">₹${p.price} (2+2 Free)</span>`;
                 }
 
                 const cardHTML = `
                     <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between relative">
                         ${offerBadge}
                         ${isOut ? '<span class="absolute top-1 right-1 bg-red-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full">Out of Stock</span>' : ''}
-                        <img src="${p.image}" class="w-full h-14 object-cover rounded-lg mb-1" onerror="this.src='https://via.placeholder.com/150'">
+                        <img src="${p.image}" class="w-full h-14 object-cover rounded-lg mb-1 mt-4" onerror="this.src='https://via.placeholder.com/150'">
                         <div>
                             <span class="text-[7px] text-purple-600 font-semibold bg-purple-50 px-1 py-0.5 rounded">${p.category}</span>
                             <h4 class="font-bold text-gray-800 text-[10px] mt-0.5 truncate">${p.name}</h4>
-                            <p class="text-[8px] text-gray-500">${priceDisplayHtml} / ${p.unit}</p>
+                            <p class="text-[8px] text-gray-500">${displayPrice} / ${p.unit}</p>
                         </div>
                         <div class="flex gap-1 mt-1">
                             <button onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''} class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-1 rounded-lg font-bold text-[8px] shadow ${isOut ? 'opacity-50 cursor-not-allowed' : ''}">Add</button>
-                            <button onclick="shareProduct('${p.name}', '${finalPrice}', '${p.unit}')" class="bg-gray-100 text-gray-600 px-1.5 py-1 rounded-lg text-[8px] font-semibold">Share</button>
+                            <button onclick="shareProduct('${p.name}', '${p.price}', '${p.unit}')" class="bg-gray-100 text-gray-600 px-1.5 py-1 rounded-lg text-[8px] font-semibold">Share</button>
                         </div>
                     </div>
                 `;
@@ -322,22 +337,12 @@
             });
         }
 
-        // Working Share Functionality
         window.shareProduct = function(name, price, unit) {
             const shareText = `Check out this product on Asa Shopping!\n\n🛍️ ${name}\n💰 Price: ₹${price} / ${unit}\n\nDownload our app & order now!`;
-            
             if (navigator.share) {
-                navigator.share({
-                    title: 'Asa Shopping',
-                    text: shareText,
-                    url: window.location.href,
-                }).catch((error) => console.log('Sharing failed', error));
+                navigator.share({ title: 'Asa Shopping', text: shareText, url: window.location.href }).catch((error) => console.log(error));
             } else {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert("Product details copied to clipboard! You can paste and share it anywhere.");
-                }).catch(() => {
-                    alert(shareText);
-                });
+                navigator.clipboard.writeText(shareText).then(() => alert("Product details copied to clipboard!"));
             }
         }
 
@@ -359,21 +364,41 @@
 
             const qtyInput = prompt(`Enter quantity for ${product.name}:`, "1");
             if (!qtyInput) return;
-            const qty = parseInt(qtyInput);
+            let qty = parseInt(qtyInput);
 
             if (isNaN(qty) || qty <= 0) return alert("Invalid quantity!");
+
+            // 1+1 Free & 2+2 Free Validation Rule
+            if (product.offer === '1+1 Free' && qty < 2) {
+                alert("🎉 This is a 1+1 Free offer item! Please select at least 2 quantity to avail this offer.");
+                return;
+            }
+            if (product.offer === '2+2 Free' && qty < 4) {
+                alert("🎉 This is a 2+2 Free offer item! Please select at least 4 quantity to avail this offer.");
+                return;
+            }
+
             if (qty > product.stock) return alert(`Sorry! We only have stock limit available.`);
 
             let effectivePrice = product.price;
-            if (product.offer === '50% OFF') effectivePrice = Math.round(product.price * 0.5);
-            if (product.offer === '25% OFF') effectivePrice = Math.round(product.price * 0.75);
+            let displayOfferText = "";
+
+            if (product.offer === '50% OFF') {
+                effectivePrice = Math.round(product.price * 0.5);
+            } else if (product.offer === '25% OFF') {
+                effectivePrice = Math.round(product.price * 0.75);
+            } else if (product.offer === '1+1 Free') {
+                displayOfferText = " (1+1 Free)";
+            } else if (product.offer === '2+2 Free') {
+                displayOfferText = " (2+2 Free)";
+            }
 
             const existing = cart.find(item => item.id === id);
             if (existing) {
                 if (existing.qty + qty > product.stock) return alert("Exceeds available stock limit!");
                 existing.qty += qty;
             } else {
-                cart.push({ ...product, price: effectivePrice, qty });
+                cart.push({ ...product, price: effectivePrice, displayOfferText, qty });
             }
 
             updateCartCount();
@@ -401,15 +426,25 @@
             let total = 0;
 
             cart.forEach((item, index) => {
-                total += item.price * item.qty;
+                let payableQty = item.qty;
+                
+                if (item.offer === '1+1 Free') {
+                    payableQty = Math.ceil(item.qty / 2);
+                } else if (item.offer === '2+2 Free') {
+                    payableQty = Math.ceil(item.qty / 4) * 2;
+                }
+
+                let itemTotal = item.price * payableQty;
+                total += itemTotal;
+
                 list.innerHTML += `
                     <div class="bg-white p-2 rounded-xl shadow-sm flex justify-between items-center text-[11px]">
                         <div>
-                            <h4 class="font-bold text-gray-800 text-[10px]">${item.name}</h4>
-                            <p class="text-[8px] text-gray-500">₹${item.price} x ${item.qty} ${item.unit}</p>
+                            <h4 class="font-bold text-gray-800 text-[10px]">${item.name} <span class="text-emerald-600 text-[8px]">${item.displayOfferText || ''}</span></h4>
+                            <p class="text-[8px] text-gray-500">₹${item.price} x Qty: ${item.qty} ${item.unit}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="font-bold text-purple-600 text-[10px]">₹${item.price * item.qty}</span>
+                            <span class="font-bold text-purple-600 text-[10px]">₹${itemTotal}</span>
                             <button onclick="removeFromCart(${index})" class="text-red-500 text-[8px] font-bold">Remove</button>
                         </div>
                     </div>
@@ -430,7 +465,7 @@
             if (tapCount >= 6) {
                 tapCount = 0;
                 const pin = prompt("Enter Admin Secret PIN:");
-                if (pin === "admin123") {
+                if (pin === "arshi2220") {
                     document.getElementById('adminPanel').classList.remove('hide');
                     resetAdminForm();
                     alert("Admin Panel Unlocked!");
@@ -541,7 +576,7 @@
         }
 
         window.placeOrderWhatsApp = async function() {
-            const name = document.getElementById('custName.value') || document.getElementById('custName').value;
+            const name = document.getElementById('custName').value;
             const phone = document.getElementById('custPhone').value;
             const address = document.getElementById('custAddress').value;
             const payMethod = document.getElementById('payMethod').value;
@@ -558,7 +593,10 @@
 
             let totalAmt = 0;
             cart.forEach(item => {
-                totalAmt += item.price * item.qty;
+                let payableQty = item.qty;
+                if (item.offer === '1+1 Free') payableQty = Math.ceil(item.qty / 2);
+                if (item.offer === '2+2 Free') payableQty = Math.ceil(item.qty / 4) * 2;
+                totalAmt += item.price * payableQty;
             });
 
             try {
@@ -574,7 +612,10 @@
                 msg += `📍 *Address:* ${address}%0A`;
                 msg += `💳 *Payment:* ${payMethod}%0A%0A*Items:*%0A`;
                 cart.forEach(item => {
-                    msg += `- ${item.name} (${item.qty} ${item.unit}) : ₹${item.price * item.qty}%0A`;
+                    let payableQty = item.qty;
+                    if (item.offer === '1+1 Free') payableQty = Math.ceil(item.qty / 2);
+                    if (item.offer === '2+2 Free') payableQty = Math.ceil(item.qty / 4) * 2;
+                    msg += `- ${item.name} (${item.qty} ${item.unit}) : ₹${item.price * payableQty}%0A`;
                 });
                 msg += `%0A*Total Amount:* ₹${totalAmt}`;
 
