@@ -290,7 +290,6 @@
                 const isOut = p.stock <= 0;
                 const offerBadge = p.offer ? `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">${p.offer}</span>` : '';
                 
-                // Automatic Discount Calculation Logic
                 let finalPrice = p.price;
                 let priceDisplayHtml = `₹${p.price}`;
 
@@ -314,13 +313,32 @@
                         </div>
                         <div class="flex gap-1 mt-1">
                             <button onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''} class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-1 rounded-lg font-bold text-[8px] shadow ${isOut ? 'opacity-50 cursor-not-allowed' : ''}">Add</button>
-                            <button onclick="alert('Shared: ${p.name}')" class="bg-gray-100 text-gray-600 px-1.5 py-1 rounded-lg text-[8px] font-semibold">Share</button>
+                            <button onclick="shareProduct('${p.name}', '${finalPrice}', '${p.unit}')" class="bg-gray-100 text-gray-600 px-1.5 py-1 rounded-lg text-[8px] font-semibold">Share</button>
                         </div>
                     </div>
                 `;
                 grid.innerHTML += cardHTML;
                 shopGrid.innerHTML += cardHTML;
             });
+        }
+
+        // Working Share Functionality
+        window.shareProduct = function(name, price, unit) {
+            const shareText = `Check out this product on Asa Shopping!\n\n🛍️ ${name}\n💰 Price: ₹${price} / ${unit}\n\nDownload our app & order now!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Asa Shopping',
+                    text: shareText,
+                    url: window.location.href,
+                }).catch((error) => console.log('Sharing failed', error));
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert("Product details copied to clipboard! You can paste and share it anywhere.");
+                }).catch(() => {
+                    alert(shareText);
+                });
+            }
         }
 
         window.filterCategory = function(cat) {
@@ -346,7 +364,6 @@
             if (isNaN(qty) || qty <= 0) return alert("Invalid quantity!");
             if (qty > product.stock) return alert(`Sorry! We only have stock limit available.`);
 
-            // Calculate discounted price for cart
             let effectivePrice = product.price;
             if (product.offer === '50% OFF') effectivePrice = Math.round(product.price * 0.5);
             if (product.offer === '25% OFF') effectivePrice = Math.round(product.price * 0.75);
@@ -413,7 +430,7 @@
             if (tapCount >= 6) {
                 tapCount = 0;
                 const pin = prompt("Enter Admin Secret PIN:");
-                if (pin === "arshi2220") {
+                if (pin === "admin123") {
                     document.getElementById('adminPanel').classList.remove('hide');
                     resetAdminForm();
                     alert("Admin Panel Unlocked!");
@@ -524,7 +541,7 @@
         }
 
         window.placeOrderWhatsApp = async function() {
-            const name = document.getElementById('custName').value;
+            const name = document.getElementById('custName.value') || document.getElementById('custName').value;
             const phone = document.getElementById('custPhone').value;
             const address = document.getElementById('custAddress').value;
             const payMethod = document.getElementById('payMethod').value;
