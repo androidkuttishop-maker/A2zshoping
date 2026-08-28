@@ -121,7 +121,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-1.5">
                     <div>
-                        <label class="text-[9px] font-bold text-gray-600">Price (₹)</label>
+                        <label class="text-[9px] font-bold text-gray-600">Original Price (₹)</label>
                         <input type="number" id="adminPrice" required class="w-full border p-1 rounded-md text-[11px]">
                     </div>
                     <div>
@@ -143,6 +143,18 @@
                         <label class="text-[9px] font-bold text-gray-600">Unit</label>
                         <input type="text" id="adminUnit" placeholder="kg, pcs, ltr" required class="w-full border p-1 rounded-md text-[11px]">
                     </div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-gray-600">Offer Tag / Special Deal</label>
+                    <select id="adminOffer" class="w-full border p-1 rounded-md text-[11px]">
+                        <option value="">No Offer (Normal)</option>
+                        <option value="1+1 Free">1+1 Free</option>
+                        <option value="2+2 Free">2+2 Free</option>
+                        <option value="50% OFF">50% OFF</option>
+                        <option value="25% OFF">25% OFF</option>
+                        <option value="New Arrival">New Arrival</option>
+                        <option value="Limited Time Deal">Limited Time Deal</option>
+                    </select>
                 </div>
                 <div>
                     <label class="text-[9px] font-bold text-gray-600">Image URL</label>
@@ -276,14 +288,29 @@
 
             filtered.forEach(p => {
                 const isOut = p.stock <= 0;
+                const offerBadge = p.offer ? `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">${p.offer}</span>` : '';
+                
+                // Automatic Discount Calculation Logic
+                let finalPrice = p.price;
+                let priceDisplayHtml = `₹${p.price}`;
+
+                if (p.offer === '50% OFF') {
+                    finalPrice = Math.round(p.price * 0.5);
+                    priceDisplayHtml = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${finalPrice}</span>`;
+                } else if (p.offer === '25% OFF') {
+                    finalPrice = Math.round(p.price * 0.75);
+                    priceDisplayHtml = `<span class="line-through text-gray-400 text-[7px]">₹${p.price}</span> <span class="text-red-600 font-bold">₹${finalPrice}</span>`;
+                }
+
                 const cardHTML = `
                     <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between relative">
+                        ${offerBadge}
                         ${isOut ? '<span class="absolute top-1 right-1 bg-red-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full">Out of Stock</span>' : ''}
                         <img src="${p.image}" class="w-full h-14 object-cover rounded-lg mb-1" onerror="this.src='https://via.placeholder.com/150'">
                         <div>
                             <span class="text-[7px] text-purple-600 font-semibold bg-purple-50 px-1 py-0.5 rounded">${p.category}</span>
                             <h4 class="font-bold text-gray-800 text-[10px] mt-0.5 truncate">${p.name}</h4>
-                            <p class="text-[8px] text-gray-500">₹${p.price} / ${p.unit}</p>
+                            <p class="text-[8px] text-gray-500">${priceDisplayHtml} / ${p.unit}</p>
                         </div>
                         <div class="flex gap-1 mt-1">
                             <button onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''} class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-1 rounded-lg font-bold text-[8px] shadow ${isOut ? 'opacity-50 cursor-not-allowed' : ''}">Add</button>
@@ -317,16 +344,19 @@
             const qty = parseInt(qtyInput);
 
             if (isNaN(qty) || qty <= 0) return alert("Invalid quantity!");
-            
-            // Check stock behind the scenes without showing it explicitly
-            if (qty > product.stock) return alert(`Sorry! We only have stock limit available. Cannot order more than available stock.`);
+            if (qty > product.stock) return alert(`Sorry! We only have stock limit available.`);
+
+            // Calculate discounted price for cart
+            let effectivePrice = product.price;
+            if (product.offer === '50% OFF') effectivePrice = Math.round(product.price * 0.5);
+            if (product.offer === '25% OFF') effectivePrice = Math.round(product.price * 0.75);
 
             const existing = cart.find(item => item.id === id);
             if (existing) {
                 if (existing.qty + qty > product.stock) return alert("Exceeds available stock limit!");
                 existing.qty += qty;
             } else {
-                cart.push({ ...product, qty });
+                cart.push({ ...product, price: effectivePrice, qty });
             }
 
             updateCartCount();
@@ -404,6 +434,7 @@
             document.getElementById('adminPrice').value = '';
             document.getElementById('adminStock').value = '';
             document.getElementById('adminUnit').value = '';
+            document.getElementById('adminOffer').value = '';
             document.getElementById('adminImage').value = '';
             document.getElementById('adminPanelTitle').textContent = '⚙️ Admin Panel - Add Product';
             document.getElementById('adminSubmitBtn').textContent = 'Save Product to Firebase';
@@ -438,6 +469,7 @@
             document.getElementById('adminStock').value = p.stock;
             document.getElementById('adminCategory').value = p.category;
             document.getElementById('adminUnit').value = p.unit;
+            document.getElementById('adminOffer').value = p.offer || '';
             document.getElementById('adminImage').value = p.image;
             document.getElementById('adminPanelTitle').textContent = '⚙️ Admin Panel - Edit Product';
             document.getElementById('adminSubmitBtn').textContent = 'Update Product in Firebase';
@@ -463,16 +495,15 @@
             const stock = parseInt(document.getElementById('adminStock').value);
             const category = document.getElementById('adminCategory').value;
             const unit = document.getElementById('adminUnit').value;
+            const offer = document.getElementById('adminOffer').value;
             const image = document.getElementById('adminImage').value;
 
             try {
                 if (editId) {
-                    // Update existing product
-                    await update(ref(db, `products/${editId}`), { name, price, stock, category, unit, image });
+                    await update(ref(db, `products/${editId}`), { name, price, stock, category, unit, offer, image });
                     alert("Product updated successfully!");
                 } else {
-                    // Add new product
-                    await push(ref(db, 'products'), { name, price, stock, category, unit, image });
+                    await push(ref(db, 'products'), { name, price, stock, category, unit, offer, image });
                     alert("Product saved successfully to Firebase!");
                 }
                 resetAdminForm();
