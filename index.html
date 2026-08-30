@@ -1,233 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 
+      ========================================================================
+      ASA SHOPPING - PROFESSIONAL SECURE ADMIN & DYNAMIC OFFERS SYSTEM
+      ========================================================================
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASA Shopping - E-Commerce</title>
+    <title>ASA Shopping - Pro System</title>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .hide { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        * { transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease; }
     </style>
 </head>
-<body class="pb-24">
+<body class="bg-slate-100 pb-28 font-sans text-gray-800 antialiased selection:bg-purple-500 selection:text-white">
 
-    <!-- Header Section -->
-    <header class="bg-white shadow-sm sticky top-0 z-50 px-4 py-2.5 flex justify-between items-center">
-        <h1 id="headerTitle" onclick="handleTitleTap()" class="text-base font-black text-purple-600 tracking-tight cursor-pointer select-none">ASA Shopping</h1>
+    <!-- ================= TOP HEADER BAR ================= -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 px-4 py-3 flex justify-between items-center border-b border-gray-100">
         <div class="flex items-center gap-2">
-            <button onclick="switchTab('cart')" class="relative bg-purple-100 px-2.5 py-1 rounded-full text-purple-700 font-bold text-[11px] flex items-center gap-1">
-                <i class="fa-solid fa-cart-shopping"></i> Cart
-                <span id="cartCount" class="bg-red-500 text-white text-[9px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+            <!-- 6 TAPS SECRET ADMIN TRIGGER ON TITLE -->
+            <h1 id="brandTitle" onclick="handleTitleTap()" class="text-base font-black text-purple-600 tracking-wide flex items-center gap-1.5 select-none cursor-pointer" title="Tap 6 times for Admin">
+                <span>ASA Shopping</span> <span class="text-sm"></span>
+            </h1>
+            <!-- ADMIN BADGE (Hidden by default) -->
+            <span id="adminBadge" class="hidden bg-red-100 text-red-600 font-bold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">Admin</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- ADD PRODUCT BUTTON (Hidden by default, visible only after admin login) -->
+            <button id="navAddBtn" onclick="openAdminFormForAdd()" class="hidden bg-blue-100 px-3 py-1.5 rounded-full text-blue-700 font-bold text-xs flex items-center gap-1.5 shadow-xs hover:bg-blue-200">
+                <i class="fa-solid fa-plus"></i> <span>Add Product</span>
+            </button>
+            <button onclick="switchTab('cart')" class="bg-purple-100 px-3 py-1.5 rounded-full text-purple-700 font-bold text-xs flex items-center gap-1.5 shadow-xs hover:bg-purple-200">
+                <i class="fa-solid fa-cart-shopping"></i> 
+                <span>Cart</span> 
+                <span id="cartCount" class="bg-purple-600 text-white px-1.5 py-0.2 rounded-full text-[10px]">0</span>
             </button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="max-w-md mx-auto p-2.5 space-y-2">
+    <!-- ================= MAIN CONTAINER ================= -->
+    <main class="max-w-md mx-auto p-3 space-y-3">
         
-        <!-- HOME TAB -->
-        <div id="homeTab" class="space-y-2">
-            <!-- Festival Banners -->
-            <div id="bannerContainer" class="flex gap-2 overflow-x-auto pb-0.5 no-scrollbar scroll-smooth">
-                <div class="bg-gradient-to-r from-emerald-400 to-teal-500 rounded-lg p-2 text-white shadow-sm min-w-full flex-shrink-0 flex flex-col justify-between h-16">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-xs font-bold leading-tight">Eid Mubarak! 🎉</h2>
-                        <button onclick="filterSpecialOffers('Eid Mubarak')" class="bg-white text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold shadow cursor-pointer">Click Spl Offer <i class="fa-solid fa-arrow-right"></i></button>
+        <!-- TAB 1: HOME & PRODUCTS -->
+        <div id="homeTab" class="space-y-3">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-400 text-xs"></i>
+                <input type="text" id="searchInput" oninput="render()" placeholder="Search products (e.g., Apple, Milk)..." class="w-full bg-white border border-gray-200 pl-9 pr-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-purple-600 shadow-xs">
+            </div>
+
+            <!-- Category Filters -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar py-1" id="categoryContainer">
+                <button onclick="filterCategory('All')" class="cat-btn bg-purple-600 text-white px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-xs">All</button>
+                <button onclick="filterCategory('Supermarket')" class="cat-btn bg-white text-gray-700 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-xs border border-gray-200">Supermarket</button>
+                <button onclick="filterCategory('Fruits')" class="cat-btn bg-white text-gray-700 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-xs border border-gray-200">Fruits & Veg</button>
+                <button onclick="filterCategory('Snacks')" class="cat-btn bg-white text-gray-700 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-xs border border-gray-200">Snacks</button>
+                <button onclick="filterCategory('Beverages')" class="cat-btn bg-white text-gray-700 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-xs border border-gray-200">Beverages</button>
+            </div>
+
+            <div id="productGrid" class="grid grid-cols-2 gap-2.5">
+                <p class="col-span-2 text-center text-gray-400 py-8 text-xs">Loading products...</p>
+            </div>
+
+            <!-- BOTTOM SPECIAL OFFER BANNERS -->
+            <div class="space-y-2 mt-4">
+                <!-- Banner 1 -->
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-3.5 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div class="space-y-0.5">
+                        <span class="bg-white/20 text-[9px] px-2 py-0.5 rounded-full font-bold">Special Offer</span>
+                        <h2 class="text-xs font-black">Today's Special Discount!</h2>
+                        <p class="text-[10px] text-purple-100">Get exciting offers, 50%, 25% discounts and combo deals.</p>
                     </div>
-                    <p class="text-[9px] opacity-90 leading-tight">Enjoy fresh grocery delivery right at your door.</p>
+                    <i class="fa-solid fa-tags text-2xl text-purple-200/50"></i>
                 </div>
-                <div class="bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg p-2 text-white shadow-sm min-w-full flex-shrink-0 flex flex-col justify-between h-16">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-xs font-bold leading-tight">Diwali Dhamaka! 🪔</h2>
-                        <button onclick="filterSpecialOffers('Diwali')" class="bg-white text-orange-700 text-[9px] px-2 py-0.5 rounded-full font-bold shadow cursor-pointer">Click Spl Offer <i class="fa-solid fa-arrow-right"></i></button>
+
+                <!-- Banner 2 -->
+                <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-3.5 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div class="space-y-0.5">
+                        <span class="bg-black/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Mega Loot Deal</span>
+                        <h3 class="text-xs font-black"> Use ASA50 for Rs.50 OFF!</h3>
+                        <p class="text-[10px] text-amber-100">Valid on purchases above <b>Rs.2000</b>.</p>
                     </div>
-                    <p class="text-[9px] opacity-90 leading-tight">Special sweets & crackers offers available now.</p>
-                </div>
-            </div>
-
-            <!-- Categories Selection -->
-            <div class="flex gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-                <button onclick="filterCategory('All')" class="cat-btn bg-purple-600 text-white px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow">All</button>
-                <button onclick="filterCategory('Supermarket')" class="cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm">Supermarket</button>
-                <button onclick="filterCategory('Fruits')" class="cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm">Fruits</button>
-                <button onclick="filterCategory('Vegetables')" class="cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm">Vegetables</button>
-                <button onclick="filterCategory('Electronics')" class="cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm">Electronics</button>
-            </div>
-
-            <!-- Products Section -->
-            <div>
-                <div class="flex justify-between items-center mb-1.5">
-                    <h3 id="productSectionTitle" class="text-xs font-bold text-gray-800">Products</h3>
-                    <span class="text-[8px] text-purple-600 font-semibold bg-purple-50 px-1.5 py-0.5 rounded">Live Firebase</span>
-                </div>
-                <div id="productGrid" class="grid grid-cols-2 gap-2">
-                    <p class="col-span-2 text-center text-gray-400 py-4 text-[11px]">Loading products...</p>
+                    <i class="fa-solid fa-fire text-2xl text-amber-200/60"></i>
                 </div>
             </div>
         </div>
 
-        <!-- SHOP TAB -->
-        <div id="shopTab" class="hide space-y-2.5">
-            <h2 class="text-xs font-bold text-gray-800">Shop Catalog</h2>
-            <div id="shopProductGrid" class="grid grid-cols-2 gap-2"></div>
-        </div>
-
-        <!-- AI SHOPPING ASSISTANT TAB (Tamil Jolly Mode) -->
-        <div id="guideTab" class="hide bg-white p-3 rounded-xl shadow-sm space-y-3">
-            <div class="flex items-center gap-2 border-b pb-2">
-                <span class="text-lg text-purple-600"><i class="fa-solid fa-robot"></i></span>
-                <div>
-                    <h2 class="text-xs font-bold text-purple-700">AI Shopping Assistant (Tamil Jolly Mode 😎)</h2>
-                    <p class="text-[9px] text-gray-500">Ask about products, offers or anything you need!</p>
+        <!-- TAB 2: AI ASSISTANT -->
+        <div id="aiTab" class="hidden space-y-3">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                <div class="flex items-center justify-between border-b pb-2">
+                    <h2 class="text-xs font-black text-purple-700 flex items-center gap-1.5 uppercase">
+                        <i class="fa-solid fa-robot text-sm"></i> AI Shopping Assistant
+                    </h2>
+                    <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">Online</span>
                 </div>
-            </div>
-            <div id="chatMessages" class="space-y-2 max-h-60 overflow-y-auto text-[11px] p-1 bg-gray-50 rounded-lg min-h-[150px]">
-                <div class="bg-purple-100 text-purple-900 p-2 rounded-lg max-w-[85%] text-[10px]">
-                    வணக்கம் பாஸ்! 😎 ASA ஷாப்பிங்கிற்கு உங்களை வரவேற்கிறேன். என்ன பொருள் வேணும்னு சொல்லுங்க, கலக்கிடலாம்! ✨
+                <div id="chatBox" class="h-72 overflow-y-auto space-y-2.5 p-3 bg-slate-50 rounded-xl text-xs flex flex-col">
+                    <div class="bg-purple-100 text-purple-800 p-3 rounded-xl max-w-[85%] self-start font-medium leading-relaxed shadow-xs">
+                        Vanakkam boss! Kadaila enna porul venum nalum kelu, irukku na irukku-nu solren, illa na jolly-aa illa nu solren! Add to cart panrathukku direct buttons-um tharuren 
+                    </div>
                 </div>
-            </div>
-            <div class="flex gap-1.5">
-                <input type="text" id="chatInput" placeholder="எ.கா. பால், ஆஃபர் என்ன இருக்கு..." class="flex-1 border p-1.5 rounded-lg text-[11px]">
-                <button onclick="sendAImessage()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold">Send</button>
+                <div class="flex gap-2 pt-1">
+                    <input type="text" id="aiInput" placeholder="E.g. Apple iruka boss?..." class="w-full border border-gray-200 p-2.5 rounded-xl text-xs focus:outline-none focus:border-purple-600 bg-white shadow-xs">
+                    <button onclick="askAI()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1">
+                        <i class="fa-solid fa-paper-plane"></i> <span>Ask</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- ADMIN PANEL TAB -->
-        <div id="adminTab" class="hide bg-white p-3 rounded-xl shadow-sm space-y-3">
+        <!-- TAB 3: CART -->
+        <div id="cartTab" class="hidden space-y-3">
+            <h2 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Your Cart Items</h2>
+            <div id="cartList" class="space-y-2"></div>
+            
+            <!-- PROMO CODE SECTION -->
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 space-y-2">
+                <label class="block font-bold text-xs text-gray-700">Have a Promo Code? (ASA50 requires min Rs.2000)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="promoInput" placeholder="Enter code (e.g. ASA50)" class="w-full border border-gray-200 p-2 rounded-xl text-xs uppercase focus:outline-none focus:border-purple-600 bg-slate-50 font-bold">
+                    <button onclick="applyPromoCode()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs">Apply</button>
+                </div>
+                <p id="promoMsg" class="text-[10px] font-bold text-green-600 hidden"></p>
+                <p id="promoError" class="text-[10px] font-bold text-red-600 hidden"></p>
+            </div>
+
+            <div id="cartTotalBox" class="bg-white p-4 rounded-2xl shadow-sm hidden space-y-3 border border-gray-100">
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex justify-between text-gray-500">
+                        <span>Subtotal:</span>
+                        <span id="subTotal">Rs.0</span>
+                    </div>
+                    <div id="discountRow" class="flex justify-between text-green-600 font-bold hidden">
+                        <span id="discountLabel">Promo Discount:</span>
+                        <span id="discountAmount">-Rs.0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-500">
+                        <span>Delivery Fee:</span>
+                        <span class="text-green-600 font-bold">Free</span>
+                    </div>
+                    <div class="flex justify-between font-black text-sm text-gray-800 pt-2 border-t">
+                        <span>Total Payable:</span>
+                        <span id="totalPrice" class="text-purple-600">Rs.0</span>
+                    </div>
+                </div>
+                <button onclick="checkout()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> <span>Order via WhatsApp</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 4: ADMIN PANEL -->
+        <div id="adminTab" class="hidden bg-white p-4 rounded-2xl shadow-sm space-y-3 border border-gray-100">
             <div class="flex justify-between items-center border-b pb-2">
-                <h2 id="adminFormTitle" class="text-xs font-bold text-purple-700"><i class="fa-solid fa-lock"></i> Add New Product</h2>
-                <button onclick="switchTab('home')" class="text-[10px] text-gray-500 font-bold bg-gray-100 px-2 py-1 rounded">Close</button>
+                <h2 id="adminFormTitle" class="text-xs font-black text-purple-700 uppercase">Admin Panel - Add Product</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="adminLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded text-[10px] font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                    <button onclick="switchTab('home')" class="text-xs text-gray-400 font-bold hover:text-gray-600">Close</button>
+                </div>
             </div>
-            <input type="hidden" id="editProductId">
-            <div class="space-y-2 text-[11px]">
+            
+            <div class="space-y-2.5 text-xs">
+                <input type="hidden" id="pEditId">
+
                 <div>
-                    <label class="font-bold text-gray-700">Product Name</label>
-                    <input type="text" id="adminProdName" placeholder="e.g. Aavin Milk" class="w-full border p-1.5 rounded-lg mt-0.5">
+                    <label class="block font-bold text-gray-600 mb-1">Product Name</label>
+                    <input type="text" id="pName" placeholder="E.g. Apple" class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
                 </div>
+                
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="font-bold text-gray-700">Original Price (Rs)</label>
-                        <input type="number" id="adminProdPrice" placeholder="50" class="w-full border p-1.5 rounded-lg mt-0.5">
+                        <label class="block font-bold text-gray-600 mb-1">Regular Price (Rs)</label>
+                        <input type="number" id="pPrice" placeholder="100" class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
                     </div>
                     <div>
-                        <label class="font-bold text-gray-700">Stock Qty (Internal)</label>
-                        <input type="number" id="adminProdStock" placeholder="50" class="w-full border p-1.5 rounded-lg mt-0.5">
+                        <label class="block font-bold text-gray-600 mb-1">Stock Quantity</label>
+                        <input type="number" id="pStock" placeholder="50" class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
                     </div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="font-bold text-gray-700">Category</label>
-                        <select id="adminProdCat" class="w-full border p-1.5 rounded-lg mt-0.5">
+                        <label class="block font-bold text-gray-600 mb-1">Unit Type</label>
+                        <select id="pUnit" class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
+                            <option value="Kg">Kg</option>
+                            <option value="Pcs">Pcs</option>
+                            <option value="Liter">Liter</option>
+                            <option value="Packet">Packet</option>
+                            <option value="Gram">Gram</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-600 mb-1">Category</label>
+                        <select id="pCategory" class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
                             <option value="Supermarket">Supermarket</option>
-                            <option value="Fruits">Fruits</option>
-                            <option value="Vegetables">Vegetables</option>
-                            <option value="Electronics">Electronics</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="font-bold text-gray-700">Unit (kg/pcs/ltr)</label>
-                        <select id="adminProdUnit" class="w-full border p-1.5 rounded-lg mt-0.5">
-                            <option value="kg">kg</option>
-                            <option value="pcs">pcs</option>
-                            <option value="ltr">ltr</option>
-                            <option value="packet">packet</option>
+                            <option value="Fruits">Fruits & Veg</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Beverages">Beverages</option>
                         </select>
                     </div>
                 </div>
-                <div>
-                    <label class="font-bold text-gray-700">Special Offer / Badge</label>
-                    <select id="adminProdOffer" onchange="toggleOfferInputs()" class="w-full border p-1.5 rounded-lg mt-0.5">
-                        <option value="">No Offer</option>
-                        <option value="50% OFF">50% OFF</option>
-                        <option value="25% OFF">25% OFF</option>
-                        <option value="1+1 Free">1+1 Free (Buy 1 Get 1)</option>
-                        <option value="Limited Time Deal">Limited Time Deal</option>
+
+                <!-- OFFER SECTION TYPE SELECTION -->
+                <div class="bg-purple-50 p-3 rounded-xl space-y-2 border border-purple-100">
+                    <label class="block font-black text-purple-700 mb-1">Offer Mode</label>
+                    <select id="pOfferType" onchange="toggleOfferFields()" class="w-full border border-gray-200 p-2 rounded-lg bg-white font-bold text-purple-600">
+                        <option value="none">No Offer</option>
+                        <option value="percentage">Percentage Discount (e.g. 50%, 25%)</option>
+                        <option value="custom_price">Custom Special Offer Price (Direct Rs)</option>
+                        <option value="quantity_deal">Quantity Combo Deal (1+1, 2+2, etc.)</option>
+                        <option value="manual_text">Manual Custom Text Offer</option>
                     </select>
-                </div>
 
-                <!-- Limited Time Deal Extra Inputs -->
-                <div id="limitedDealContainer" class="hide bg-amber-50 p-2 rounded-lg border border-amber-200 space-y-2">
-                    <div>
-                        <label class="font-bold text-amber-800 text-[10px]">Limited Offer Discount Price (Rs)</label>
-                        <input type="number" id="adminDealPrice" placeholder="e.g. 40" class="w-full border p-1.5 rounded-lg mt-0.5 bg-white text-[11px]">
+                    <div id="divPercentage" class="hidden pt-1">
+                        <label class="block text-gray-600 font-bold mb-1">Select Discount %</label>
+                        <select id="pPercVal" class="w-full border p-2 rounded-lg bg-white">
+                            <option value="50">50% OFF</option>
+                            <option value="25">25% OFF</option>
+                            <option value="10">10% OFF</option>
+                            <option value="75">75% OFF</option>
+                        </select>
                     </div>
-                    <div>
-                        <label class="font-bold text-amber-800 text-[10px]">Offer Expiry Date & Time</label>
-                        <input type="datetime-local" id="adminProdExpiry" class="w-full border p-1.5 rounded-lg mt-0.5 bg-white text-[11px]">
+
+                    <div id="divCustomPrice" class="hidden pt-1">
+                        <label class="block text-gray-600 font-bold mb-1">Offer Price (Rs)</label>
+                        <input type="number" id="pOfferPriceVal" placeholder="E.g. 80" class="w-full border p-2 rounded-lg bg-white">
+                    </div>
+
+                    <div id="divQuantityDeal" class="hidden pt-1">
+                        <label class="block text-gray-600 font-bold mb-1">Select Combo Deal</label>
+                        <select id="pQtyDealVal" class="w-full border p-2 rounded-lg bg-white">
+                            <option value="1+1 Free">1+1 Free</option>
+                            <option value="2+2 Free">2+2 Free</option>
+                            <option value="3+3 Free">3+3 Free</option>
+                        </select>
+                    </div>
+
+                    <div id="divManualText" class="hidden pt-1">
+                        <label class="block text-gray-600 font-bold mb-1">Type Custom Offer Name</label>
+                        <input type="text" id="pManualVal" placeholder="E.g. Buy 2 Get 1 Special" class="w-full border p-2 rounded-lg bg-white">
                     </div>
                 </div>
 
                 <div>
-                    <label class="font-bold text-gray-700">Image URL</label>
-                    <input type="text" id="adminProdImg" placeholder="https://..." class="w-full border p-1.5 rounded-lg mt-0.5">
+                    <label class="block font-bold text-gray-600 mb-1">Expiry Time (Optional)</label>
+                    <input type="datetime-local" id="pExpiry" class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
                 </div>
-                <button onclick="saveProductFirebase()" class="w-full bg-purple-600 text-white py-2 rounded-xl font-bold shadow-md">Save Product to Firebase</button>
-            </div>
 
-            <!-- Existing Products List for Quick Edit -->
-            <div class="border-t pt-3 space-y-2">
-                <h3 class="text-xs font-bold text-gray-800">Existing Products (Click to Edit)</h3>
-                <div id="adminProductListContainer" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
-            </div>
-        </div>
-
-        <!-- CART TAB -->
-        <div id="cartTab" class="hide space-y-2.5">
-            <h2 class="text-xs font-bold text-gray-800">Your Cart</h2>
-            <div id="cartItemsList" class="space-y-1.5">
-                <p class="text-center text-gray-400 py-4 text-[11px]">Your cart is empty</p>
-            </div>
-            <div id="cartSummary" class="bg-white p-2.5 rounded-xl shadow-sm space-y-2 hide">
-                <div class="flex justify-between font-bold text-xs text-gray-800 border-t pt-1.5">
-                    <span>Total:</span>
-                    <span id="cartTotalPrice">Rs.0</span>
-                </div>
-                <button onclick="openCheckout()" class="w-full bg-purple-600 text-white py-1.5 rounded-xl font-bold shadow-md text-[11px]">Proceed to Checkout</button>
-            </div>
-        </div>
-
-        <!-- CHECKOUT SECTION -->
-        <div id="checkoutSection" class="hide bg-white p-2.5 rounded-xl shadow-lg border space-y-2">
-            <h2 class="text-xs font-bold text-gray-800">Checkout Details</h2>
-            <div class="space-y-1.5">
-                <input type="text" id="custName" placeholder="Full Name" class="w-full border p-1.5 rounded-lg text-[11px]">
-                <input type="tel" id="custPhone" placeholder="Phone Number" class="w-full border p-1.5 rounded-lg text-[11px]">
-                <textarea id="custAddress" placeholder="Delivery Address" class="w-full border p-1.5 rounded-lg text-[11px] h-14"></textarea>
                 <div>
-                    <label class="text-[9px] font-bold text-gray-600">Payment Method</label>
-                    <select id="payMethod" class="w-full border p-1.5 rounded-lg text-[11px] mt-0.5">
-                        <option value="COD">Cash on Delivery (COD)</option>
-                        <option value="UPI">UPI / GPay / PhonePe</option>
-                    </select>
+                    <label class="block font-bold text-gray-600 mb-1">Image URL</label>
+                    <input type="text" id="pImage" placeholder="https://..." class="w-full border border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-purple-600 bg-white">
                 </div>
-                <button onclick="placeOrderWhatsApp()" class="w-full bg-emerald-600 text-white py-1.5 rounded-xl font-bold shadow-md text-[11px]">Place Order & Send WhatsApp</button>
-                <button onclick="switchTab('home')" class="w-full text-gray-500 py-0.5 text-[11px]">Back to Home</button>
+
+                <button onclick="saveProduct()" id="saveBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold transition shadow-md">Save Product</button>
             </div>
         </div>
-
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-1.5 px-6 flex justify-around items-center z-40 max-w-md mx-auto shadow-lg">
-        <button onclick="switchTab('home')" id="navHome" class="flex flex-col items-center text-purple-600 font-bold text-[9px]">
-            <i class="fa-solid fa-house text-sm mb-0.5"></i> Home
+    <!-- ================= BOTTOM NAVIGATION ================= -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t py-2.5 px-4 flex justify-around items-center max-w-md mx-auto z-40 shadow-lg">
+        <button onclick="switchTab('home')" id="navHome" class="text-purple-600 font-bold text-xs flex flex-col items-center gap-1 transition">
+            <i class="fa-solid fa-house text-sm"></i> <span>Home</span>
         </button>
-        <button onclick="switchTab('shop')" id="navShop" class="flex flex-col items-center text-gray-400 font-bold text-[9px]">
-            <i class="fa-solid fa-bag-shopping text-sm mb-0.5"></i> Shop
+        <button onclick="switchTab('ai')" id="navAi" class="text-gray-400 font-bold text-xs flex flex-col items-center gap-1 transition">
+            <i class="fa-solid fa-robot text-sm"></i> <span>AI Shop</span>
         </button>
-        <button onclick="switchTab('guide')" id="navGuide" class="flex flex-col items-center text-gray-400 font-bold text-[9px]">
-            <i class="fa-solid fa-robot text-sm mb-0.5"></i> AI Shopping
+        <button onclick="switchTab('cart')" id="navCart" class="text-gray-400 font-bold text-xs flex flex-col items-center gap-1 transition">
+            <i class="fa-solid fa-bag-shopping text-sm"></i> <span>Cart</span>
         </button>
     </nav>
 
-    <!-- FIREBASE & APP LOGIC (800+ Lines Complete Implementation) -->
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, get, update, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA7_tFTLZymQ19BeNv9lDPn-ctcDD3url0",
@@ -242,568 +298,671 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let productsList = [];
-        let cart = JSON.parse(localStorage.getItem('asa_cart')) || [];
-        let currentFilter = 'All';
-        let titleTapCount = 0;
-        let tapTimer = null;
-        let countdownInterval = null;
-        const ADMIN_PASS = "arshi2220";
+        let products = [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentCategory = 'All';
+        let isAdmin = localStorage.getItem('asa_admin_logged') === 'true';
+        let activePromo = null; // Stores applied promo code details
 
+        window.applyAdminState = function() {
+            const adminBadge = document.getElementById('adminBadge');
+            const navAddBtn = document.getElementById('navAddBtn');
+            if (isAdmin) {
+                if(adminBadge) adminBadge.classList.remove('hidden');
+                if(navAddBtn) navAddBtn.classList.remove('hidden');
+            } else {
+                if(adminBadge) adminBadge.classList.add('hidden');
+                if(navAddBtn) navAddBtn.classList.add('hidden');
+            }
+            render();
+        };
+
+        let titleTapCount = 0;
+        let titleTapTimer = null;
         window.handleTitleTap = function() {
+            if (isAdmin) {
+                alert("Neenga already Admin-a thaan irukkeenga boss!");
+                return;
+            }
             titleTapCount++;
-            clearTimeout(tapTimer);
+            if (titleTapTimer) clearTimeout(titleTapTimer);
+            
             if (titleTapCount >= 6) {
                 titleTapCount = 0;
-                let enteredPass = prompt("Enter Admin Password:");
-                if (enteredPass === ADMIN_PASS) {
-                    resetAdminForm();
-                    switchTab('admin');
-                    renderAdminProductList();
-                    alert("🔓 Admin Panel Unlocked!");
-                } else if (enteredPass !== null) {
-                    alert("❌ Incorrect Password!");
+                let passwordInput = prompt("Enter Admin Password:");
+                if (passwordInput === "arshi2220") {
+                    isAdmin = true;
+                    localStorage.setItem('asa_admin_logged', 'true');
+                    alert("Admin Login Success! Edit & Add options enabled.");
+                    applyAdminState();
+                } else {
+                    alert("Wrong Password!");
                 }
             } else {
-                tapTimer = setTimeout(() => { titleTapCount = 0; }, 2000);
+                titleTapTimer = setTimeout(() => { titleTapCount = 0; }, 1500);
             }
-        }
+        };
 
-        window.toggleOfferInputs = function() {
-            const offerVal = document.getElementById('adminProdOffer').value;
-            const container = document.getElementById('limitedDealContainer');
-            if (offerVal === 'Limited Time Deal') {
-                container.classList.remove('hide');
-            } else {
-                container.classList.add('hide');
-            }
-        }
+        window.adminLogout = function() {
+            isAdmin = false;
+            localStorage.setItem('asa_admin_logged', 'false');
+            alert("Admin Logged out successfully!");
+            applyAdminState();
+            switchTab('home');
+        };
 
-        function initAutoScrollBanner() {
-            const container = document.getElementById('bannerContainer');
-            if (!container) return;
-            let scrollIndex = 0;
-            setInterval(() => {
-                const totalBanners = container.children.length;
-                scrollIndex = (scrollIndex + 1) % totalBanners;
-                container.scrollTo({ left: scrollIndex * container.clientWidth, behavior: 'smooth' });
-            }, 3000);
-        }
+        window.toggleOfferFields = function() {
+            const mode = document.getElementById('pOfferType').value;
+            document.getElementById('divPercentage').classList.add('hidden');
+            document.getElementById('divCustomPrice').classList.add('hidden');
+            document.getElementById('divQuantityDeal').classList.add('hidden');
+            document.getElementById('divManualText').classList.add('hidden');
 
-        window.filterSpecialOffers = function(festivalName) {
-            currentFilter = 'All';
-            document.getElementById('productSectionTitle').textContent = `✨ ${festivalName} Special Offers`;
-            const offerProducts = productsList.filter(p => p.offer && p.offer !== '');
-            if (offerProducts.length === 0) {
-                alert("No special offers found right now!");
-                return;
-            }
-            renderCustomProducts(offerProducts);
-        }
+            if (mode === 'percentage') document.getElementById('divPercentage').classList.remove('hidden');
+            if (mode === 'custom_price') document.getElementById('divCustomPrice').classList.remove('hidden');
+            if (mode === 'quantity_deal') document.getElementById('divQuantityDeal').classList.remove('hidden');
+            if (mode === 'manual_text') document.getElementById('divManualText').classList.remove('hidden');
+        };
 
-        window.loadProducts = async function() {
+        window.loadData = async function() {
             try {
-                const snapshot = await get(ref(db, 'products'));
-                if (snapshot.exists()) {
-                    productsList = [];
-                    snapshot.forEach((childSnapshot) => {
-                        productsList.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                const productsRef = ref(db, 'products');
+                const snap = await get(productsRef);
+                
+                if(snap.exists()) {
+                    products = [];
+                    snap.forEach(childSnapshot => {
+                        products.push({
+                            id: childSnapshot.key,
+                            ...childSnapshot.val()
+                        });
                     });
-                    renderProducts();
-                    renderAdminProductList();
+                    render();
                 } else {
-                    document.getElementById('productGrid').innerHTML = '<p class="col-span-2 text-center text-gray-400 py-4 text-[11px]">No products found.</p>';
+                    document.getElementById('productGrid').innerHTML = '<p class="col-span-2 text-center text-gray-400 py-8 text-xs">No products available</p>';
                 }
-            } catch (error) {
-                console.error(error);
+            } catch(error) {
+                console.error("Error loading products:", error);
             }
-        }
+        };
 
-        window.renderProducts = function() {
-            document.getElementById('productSectionTitle').textContent = currentFilter === 'All' ? 'Products' : `${currentFilter} Products`;
-            const filtered = currentFilter === 'All' ? productsList : productsList.filter(p => p.category === currentFilter);
-            renderCustomProducts(filtered);
-        }
+        window.getProcessedProductDetails = function(p) {
+            const currentTime = new Date().getTime();
+            let basePrice = Number(p.price) || 0;
+            let finalPrice = basePrice;
+            let displayOffer = '';
+            let isExpired = false;
 
-        window.renderCustomProducts = function(itemsList) {
+            if (p.expiryTime && p.expiryTime.trim() !== "") {
+                let expiryTimestamp = new Date(p.expiryTime).getTime();
+                if (!isNaN(expiryTimestamp) && currentTime >= expiryTimestamp) {
+                    isExpired = true;
+                }
+            }
+
+            if (!isExpired) {
+                if (p.offerType === 'percentage' && p.offerVal) {
+                    let perc = Number(p.offerVal);
+                    finalPrice = Math.round(basePrice * (1 - perc / 100));
+                    displayOffer = `${perc}% OFF`;
+                } else if (p.offerType === 'custom_price' && p.offerVal) {
+                    finalPrice = Number(p.offerVal);
+                    displayOffer = `Special Deal`;
+                } else if (p.offerType === 'quantity_deal' && p.offerVal) {
+                    finalPrice = basePrice; 
+                    displayOffer = p.offerVal;
+                } else if (p.offerType === 'manual_text' && p.offerVal) {
+                    finalPrice = basePrice;
+                    displayOffer = p.offerVal;
+                }
+            }
+
+            return {
+                finalPrice,
+                displayOffer: isExpired ? '' : displayOffer,
+                appliedOfferName: isExpired ? '' : displayOffer
+            };
+        };
+
+        window.render = function() {
             const grid = document.getElementById('productGrid');
-            const shopGrid = document.getElementById('shopProductGrid');
             grid.innerHTML = '';
-            shopGrid.innerHTML = '';
 
-            if (itemsList.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 py-4 text-[11px]">No products in this list.</p>';
-                return;
-            }
-
-            itemsList.forEach(p => {
-                const isOut = p.stock <= 0;
-                let offerBadge = '';
-                let displayPrice = `Rs.${p.price}`;
-                let effectivePrice = p.price;
-                let isOfferExpired = false;
-
-                // Limited Time Deal Expiry Check
-                if (p.offer === 'Limited Time Deal' && p.expiryTime) {
-                    const expiryDate = new Date(p.expiryTime).getTime();
-                    const now = new Date().getTime();
-                    if (now > expiryDate) {
-                        isOfferExpired = true;
-                    }
-                }
-
-                if (p.offer === '50% OFF') {
-                    effectivePrice = Math.round(p.price * 0.5);
-                    displayPrice = `<span class="line-through text-gray-400 text-[7px]">Rs.${p.price}</span> <span class="text-red-600 font-bold">Rs.${effectivePrice}</span>`;
-                    offerBadge = `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">50% OFF</span>`;
-                } else if (p.offer === '25% OFF') {
-                    effectivePrice = Math.round(p.price * 0.75);
-                    displayPrice = `<span class="line-through text-gray-400 text-[7px]">Rs.${p.price}</span> <span class="text-red-600 font-bold">Rs.${effectivePrice}</span>`;
-                    offerBadge = `<span class="absolute top-1 left-1 bg-amber-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">25% OFF</span>`;
-                } else if (p.offer === '1+1 Free') {
-                    displayPrice = `<span class="text-emerald-600 font-bold">Rs.${p.price} (1+1 Free)</span>`;
-                    offerBadge = `<span class="absolute top-1 left-1 bg-emerald-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">1+1 Free</span>`;
-                } else if (p.offer === 'Limited Time Deal') {
-                    if (!isOfferExpired) {
-                        effectivePrice = p.dealPrice ? parseFloat(p.dealPrice) : p.price;
-                        displayPrice = `<span class="line-through text-gray-400 text-[7px]">Rs.${p.price}</span> <span class="text-red-600 font-bold">Rs.${effectivePrice}</span>`;
-                        offerBadge = `<span class="absolute top-1 left-1 bg-amber-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow">Limited Time Deal</span>`;
-                    } else {
-                        effectivePrice = p.price;
-                        displayPrice = `Rs.${p.price}`;
-                    }
-                }
-
-                let expiryHtml = '';
-                if (p.offer === 'Limited Time Deal' && p.expiryTime && !isOfferExpired) {
-                    expiryHtml = `<div id="timer-${p.id}" data-expiry="${p.expiryTime}" class="text-[7px] text-amber-700 font-bold bg-amber-50 px-1.5 py-1 rounded mt-1 shadow-sm border border-amber-200 text-center"><i class="fa-solid fa-clock"></i> Loading timer...</div>`;
-                }
-
-                const cardHTML = `
-                    <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between relative">
-                        ${!isOfferExpired ? offerBadge : ''}
-                        ${isOut ? '<span class="absolute top-1 right-1 bg-red-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full">Not Available</span>' : ''}
-                        <img src="${p.image}" class="w-full h-14 object-cover rounded-lg mb-1 mt-4" onerror="this.src='https://via.placeholder.com/150'">
-                        <div class="flex-1">
-                            <span class="text-[7px] text-purple-600 font-semibold bg-purple-50 px-1 py-0.5 rounded">${p.category}</span>
-                            <h4 class="font-bold text-gray-800 text-[10px] mt-0.5 truncate">${p.name}</h4>
-                            <div class="flex items-center gap-1 mt-0.5">
-                                <span class="text-[8px] text-gray-700 font-bold">${displayPrice}</span>
-                                <span class="text-[8px] text-gray-500">/ ${p.unit}</span>
-                            </div>
-                            ${expiryHtml}
-                        </div>
-                        
-                        <!-- Quantity Selector and Add Button -->
-                        <div class="mt-2 space-y-1">
-                            <div class="flex items-center justify-between bg-gray-50 px-2 py-0.5 rounded border">
-                                <span class="text-[9px] text-gray-600 font-bold">Qty:</span>
-                                <div class="flex items-center gap-1.5">
-                                    <button onclick="changeProdQty('${p.id}', -1)" class="w-4 h-4 bg-gray-200 text-gray-700 rounded font-bold text-[9px] flex items-center justify-center">-</button>
-                                    <span id="qty-val-${p.id}" class="text-[9px] font-bold text-gray-800">1</span>
-                                    <button onclick="changeProdQty('${p.id}', 1)" class="w-4 h-4 bg-gray-200 text-gray-700 rounded font-bold text-[9px] flex items-center justify-center">+</button>
-                                </div>
-                            </div>
-                            <div class="flex gap-1">
-                                <button onclick="addToCartWithQty('${p.id}')" ${isOut ? 'disabled' : ''} class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-1 rounded-lg font-bold text-[8px] shadow ${isOut ? 'opacity-50 cursor-not-allowed' : ''}">Add</button>
-                                <button onclick="shareProduct('${p.name}', '${effectivePrice}', '${p.unit}')" class="bg-gray-100 text-gray-600 px-1.5 py-1 rounded-lg text-[8px] font-semibold">Share</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += cardHTML;
-                shopGrid.innerHTML += cardHTML;
+            let filteredProducts = products.filter(p => {
+                let matchCategory = (currentCategory === 'All' || p.category === currentCategory);
+                let searchInputText = document.getElementById('searchInput').value.toLowerCase();
+                let matchSearchQuery = p.name.toLowerCase().includes(searchInputText);
+                return matchCategory && matchSearchQuery;
             });
 
-            startLiveCountdowns();
-        }
-
-        window.changeProdQty = function(id, val) {
-            const span = document.getElementById(`qty-val-${id}`);
-            if(!span) return;
-            let currentQty = parseInt(span.textContent) + val;
-            if (currentQty < 1) currentQty = 1;
-            
-            const product = productsList.find(p => p.id === id);
-            if (product && currentQty > product.stock) {
-                alert("Stock ku mela panna mudiyaathu! (Cannot exceed available stock)");
-                return;
-            }
-            span.textContent = currentQty;
-        }
-
-        window.addToCartWithQty = function(id) {
-            const product = productsList.find(p => p.id === id);
-            if (!product || product.stock <= 0) return alert("Sorry, Not Available / Out of stock!");
-
-            const span = document.getElementById(`qty-val-${id}`);
-            let qty = span ? parseInt(span.textContent) : 1;
-
-            // 1+1 Offer Validation Rule Check
-            if (product.offer === '1+1 Free' && qty === 1) {
-                const wantExtra = confirm("🎉 1+1 Free Offer irukku boss! Ungalukku 1 free item kidaikkum. Innum oru extra item (Qty: 2) add panreengளா? (OK = Add 2 items, Cancel = Continue with 1)");
-                if (wantExtra) {
-                    qty = 2;
-                    if (span) span.textContent = 2;
-                }
-            }
-
-            let effectivePrice = product.price;
-            let displayOfferText = "";
-            let isOfferExpired = false;
-
-            if (product.offer === 'Limited Time Deal' && product.expiryTime) {
-                if (new Date().getTime() > new Date(product.expiryTime).getTime()) {
-                    isOfferExpired = true;
-                }
-            }
-
-            if (product.offer === '50% OFF') {
-                effectivePrice = Math.round(product.price * 0.5);
-            } else if (product.offer === '25% OFF') {
-                effectivePrice = Math.round(product.price * 0.75);
-            } else if (product.offer === 'Limited Time Deal' && !isOfferExpired) {
-                effectivePrice = product.dealPrice ? parseFloat(product.dealPrice) : product.price;
-            } else if (product.offer === '1+1 Free') {
-                displayOfferText = " (1+1 Free)";
-            }
-
-            const existing = cart.find(item => item.id === id);
-            let currentCartQty = existing ? existing.qty : 0;
-
-            if (currentCartQty + qty > product.stock) {
-                alert("Stock ku mela order panna mudiyaathu! Not available.");
+            if(filteredProducts.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 py-8 text-xs">No products found</p>';
                 return;
             }
 
-            if (existing) {
-                existing.qty += qty;
-            } else {
-                cart.push({ ...product, price: effectivePrice, displayOfferText, qty });
-            }
-
-            saveCartToStorage();
-            updateCartCount();
-            alert(`${qty} item(s) cart-il add aagiduchu boss! 👍`);
-        }
-
-        function startLiveCountdowns() {
-            if (countdownInterval) clearInterval(countdownInterval);
-
-            countdownInterval = setInterval(() => {
-                const timerElements = document.querySelectorAll('[id^="timer-"]');
-                timerElements.forEach(el => {
-                    const expiryStr = el.getAttribute('data-expiry');
-                    const expiryDate = new Date(expiryStr).getTime();
-                    const now = new Date().getTime();
-                    const distance = expiryDate - now;
-
-                    if (distance < 0) {
-                        loadProducts();
-                    } else {
-                        const hours = Math.floor(distance / (1000 * 60 * 60));
-                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                        el.innerHTML = `<i class="fa-solid fa-clock"></i> Ends in: ${hours}h : ${minutes}m : ${seconds}s`;
-                    }
-                });
-            }, 1000);
-        }
-
-        window.renderAdminProductList = function() {
-            const container = document.getElementById('adminProductListContainer');
-            container.innerHTML = '';
-            if (productsList.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-[10px]">No products available.</p>';
-                return;
-            }
-            productsList.forEach(p => {
-                container.innerHTML += `
-                    <div class="bg-gray-50 p-1.5 rounded-lg flex justify-between items-center border text-[10px]">
-                        <div>
-                            <span class="font-bold">${p.name}</span> - Rs.${p.price} / ${p.unit} <span class="text-purple-600 font-semibold">(${p.offer || 'No Offer'})</span>
+            filteredProducts.forEach(p => {
+                const details = window.getProcessedProductDetails(p);
+                let stockNum = Number(p.stock) || 0;
+                let priceDisplayHtml = '';
+                
+                if (details.finalPrice < Number(p.price)) {
+                    priceDisplayHtml = `
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-xs text-purple-600 font-black">Rs.${details.finalPrice}</span>
+                            <span class="text-[10px] text-gray-400 line-through">Rs.${p.price}</span>
                         </div>
-                        <button onclick="loadProductForEdit('${p.id}')" class="bg-purple-600 text-white px-2 py-0.5 rounded font-bold text-[9px]">Edit</button>
-                    </div>
-                `;
-            });
-        }
-
-        window.loadProductForEdit = function(id) {
-            const p = productsList.find(item => item.id === id);
-            if (!p) return;
-            document.getElementById('editProductId').value = p.id;
-            document.getElementById('adminProdName').value = p.name;
-            document.getElementById('adminProdPrice').value = p.price;
-            document.getElementById('adminProdStock').value = p.stock;
-            document.getElementById('adminProdCat').value = p.category;
-            document.getElementById('adminProdUnit').value = p.unit;
-            document.getElementById('adminProdOffer').value = p.offer || '';
-            document.getElementById('adminDealPrice').value = p.dealPrice || '';
-            document.getElementById('adminProdImg').value = p.image;
-            document.getElementById('adminProdExpiry').value = p.expiryTime || '';
-            toggleOfferInputs();
-            document.getElementById('adminFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Product: ${p.name}`;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.resetAdminForm = function() {
-            document.getElementById('editProductId').value = '';
-            document.getElementById('adminProdName').value = '';
-            document.getElementById('adminProdPrice').value = '';
-            document.getElementById('adminProdStock').value = '';
-            document.getElementById('adminProdUnit').value = 'kg';
-            document.getElementById('adminProdOffer').value = '';
-            document.getElementById('adminDealPrice').value = '';
-            document.getElementById('adminProdImg').value = '';
-            document.getElementById('adminProdExpiry').value = '';
-            toggleOfferInputs();
-            document.getElementById('adminFormTitle').innerHTML = `<i class="fa-solid fa-lock"></i> Add New Product`;
-        }
-
-        window.saveProductFirebase = async function() {
-            const editId = document.getElementById('editProductId').value;
-            const name = document.getElementById('adminProdName').value.trim();
-            const price = parseFloat(document.getElementById('adminProdPrice').value);
-            const stock = parseInt(document.getElementById('adminProdStock').value);
-            const category = document.getElementById('adminProdCat').value;
-            const unit = document.getElementById('adminProdUnit').value;
-            const offer = document.getElementById('adminProdOffer').value;
-            const dealPrice = offer === 'Limited Time Deal' ? parseFloat(document.getElementById('adminDealPrice').value) : '';
-            const expiryTime = offer === 'Limited Time Deal' ? document.getElementById('adminProdExpiry').value : '';
-            const image = document.getElementById('adminProdImg').value.trim();
-
-            if (!name || isNaN(price) || isNaN(stock) || !image) {
-                alert("Please fill all required product fields!");
-                return;
-            }
-
-            try {
-                if (editId) {
-                    await update(ref(db, `products/${editId}`), { name, price, stock, category, unit, offer, dealPrice, expiryTime, image });
-                    alert("Product updated successfully!");
+                    `;
                 } else {
-                    const newRef = push(ref(db, 'products'));
-                    await set(newRef, { name, price, stock, category, unit, offer, dealPrice, expiryTime, image });
-                    alert("New product added successfully!");
+                    let offerTagIndicator = details.appliedOfferName ? `<span class="text-[9px] text-green-600 font-bold block"> ${details.appliedOfferName}</span>` : '';
+                    priceDisplayHtml = `
+                        <p class="text-xs text-purple-600 font-black mt-0.5">Rs.${p.price}</p>
+                        ${offerTagIndicator}
+                    `;
                 }
-                resetAdminForm();
-                loadProducts();
-                switchTab('home');
-            } catch (err) {
-                console.error(err);
-                alert("Failed to save product.");
-            }
-        }
 
-        window.shareProduct = function(name, price, unit) {
-            const shareText = `Check out this product on ASA Shopping!\n\n🛍️ ${name}\n💰 Price: Rs.${price} / ${unit}\n\nOrder now!`;
-            if (navigator.share) {
-                navigator.share({ title: 'ASA Shopping', text: shareText, url: window.location.href }).catch(err => console.log(err));
-            } else {
-                navigator.clipboard.writeText(shareText).then(() => alert("Product details copied!"));
-            }
-        }
+                let stockHtml = '';
+                if (stockNum <= 0) {
+                    stockHtml = `<span class="text-[10px] text-red-600 font-bold">Stock Illa</span>`;
+                } else if (stockNum <= 3) {
+                    stockHtml = `<span class="text-[10px] text-red-500 font-bold">Only ${stockNum} left!</span>`;
+                }
 
-        window.filterCategory = function(cat) {
-            currentFilter = cat;
+                let existingCartItem = cart.find(item => item.id === p.id);
+                let currentQtyInCart = existingCartItem ? existingCartItem.qty : 0;
+
+                let actionAreaHtml = '';
+                if (currentQtyInCart > 0) {
+                    actionAreaHtml = `
+                        <div class="flex items-center justify-between bg-purple-600 text-white rounded-xl px-2 py-1 text-xs font-bold">
+                            <button onclick="decreaseCartQty('${p.id}')" class="px-2 py-0.5 hover:bg-purple-700 rounded"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                            <span>${currentQtyInCart}</span>
+                            <button onclick="increaseCartQty('${p.id}')" class="px-2 py-0.5 hover:bg-purple-700 rounded"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                        </div>
+                    `;
+                } else {
+                    actionAreaHtml = `
+                        <button onclick="addToCart('${p.id}')" class="w-full bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 py-1.5 rounded-xl text-[11px] font-bold transition">Add to Cart</button>
+                    `;
+                }
+
+                let adminActionButtons = '';
+                if (isAdmin) {
+                    adminActionButtons = `
+                        <div class="flex gap-1 mt-1.5">
+                            <button onclick="shareProduct('${p.name}', '${details.finalPrice}', '${p.image}')" class="flex-1 bg-green-50 hover:bg-green-600 hover:text-white text-green-700 py-1 rounded-lg text-[10px] font-bold transition"><i class="fa-solid fa-share-nodes"></i></button>
+                            <button onclick="editProduct('${p.id}')" class="flex-1 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 py-1 rounded-lg text-[10px] font-bold transition"><i class="fa-solid fa-pen"></i></button>
+                        </div>
+                    `;
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-white p-2.5 rounded-2xl shadow-xs border border-gray-100 flex flex-col justify-between relative">
+                        ${details.displayOffer ? `<span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-xs">${details.displayOffer}</span>` : ''}
+                        <img src="${p.image}" class="w-full h-24 object-cover rounded-xl mb-2 mt-2" onerror="this.src='https://via.placeholder.com/150'">
+                        <div>
+                            <h4 class="font-bold text-xs text-gray-800 truncate">${p.name}</h4>
+                            ${priceDisplayHtml}
+                            <div class="mt-0.5">${stockHtml}</div>
+                        </div>
+                        <div class="mt-2.5 space-y-1">
+                            ${actionAreaHtml}
+                            ${adminActionButtons}
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.filterCategory = function(categoryName) {
+            currentCategory = categoryName;
             document.querySelectorAll('.cat-btn').forEach(btn => {
-                if(btn.textContent.trim() === cat) {
-                    btn.className = "cat-btn bg-purple-600 text-white px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow";
-                } else {
-                    btn.className = "cat-btn bg-white text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-sm";
-                }
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700', 'border', 'border-gray-200');
             });
-            renderProducts();
-        }
-
-        window.saveCartToStorage = function() {
-            localStorage.setItem('asa_cart', JSON.stringify(cart));
-        }
-
-        window.updateCartCount = function() {
-            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-            document.getElementById('cartCount').textContent = totalCount;
-            renderCartItems();
-        }
-
-        window.renderCartItems = function() {
-            const list = document.getElementById('cartItemsList');
-            const summary = document.getElementById('cartSummary');
-            list.innerHTML = '';
-
-            if (cart.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-400 py-4 text-[11px]">Your cart is empty</p>';
-                summary.classList.add('hide');
-                return;
+            if(window.event && window.event.target) {
+                window.event.target.classList.remove('bg-white', 'text-gray-700', 'border', 'border-gray-200');
+                window.event.target.classList.add('bg-purple-600', 'text-white');
             }
+            render();
+        };
 
-            summary.classList.remove('hide');
-            let total = 0;
+        // ================= SMART AI WITH ADD TO CART =================
+        window.askAI = function() {
+            let userInputField = document.getElementById('aiInput');
+            let userQueryText = userInputField.value.trim();
+            if(!userQueryText) return;
 
-            cart.forEach((item, index) => {
-                let payableQty = item.qty;
-                if (item.offer === '1+1 Free') payableQty = Math.ceil(item.qty / 2);
-                let itemTotal = item.price * payableQty;
-                total += itemTotal;
-
-                list.innerHTML += `
-                    <div class="bg-white p-2 rounded-xl shadow-sm flex justify-between items-center text-[11px]">
-                        <div>
-                            <h4 class="font-bold text-gray-800 text-[10px]">${item.name} <span class="text-emerald-600 text-[8px]">${item.displayOfferText || ''}</span></h4>
-                            <p class="text-[8px] text-gray-500">Rs.${item.price} x Qty: ${item.qty} ${item.unit} ${item.offer === '1+1 Free' ? `(Payable Qty: ${payableQty})` : ''}</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-purple-600 text-[10px]">Rs.${itemTotal}</span>
-                            <button onclick="removeFromCart(${index})" class="text-red-500 text-[8px] font-bold">Remove</button>
-                        </div>
-                    </div>
-                `;
+            let chatBoxContainer = document.getElementById('chatBox');
+            chatBoxContainer.innerHTML += `<div class="bg-white text-gray-800 p-2.5 rounded-xl max-w-[85%] self-end shadow-xs font-medium">${userQueryText}</div>`;
+            
+            let queryLower = userQueryText.toLowerCase();
+            let sanitizedQuery = queryLower
+                .replace(/price|rate|cost|viulai|vilai|kathu|keli|irukka|iruku|eruka|eruku|venum|want|search|thedu|enna|epdi|sollu|boss|kadaila|la/g, '').trim();
+            
+            let matchedProduct = products.find(p => {
+                let nameLower = p.name.toLowerCase();
+                return nameLower.includes(sanitizedQuery) || (sanitizedQuery.length > 1 && sanitizedQuery.includes(nameLower));
             });
 
-            document.getElementById('cartTotalPrice').textContent = `Rs.${total}`;
-        }
+            let botResponseText = "";
+            let addCartButtonHtml = "";
 
-        window.removeFromCart = function(index) {
-            cart.splice(index, 1);
-            saveCartToStorage();
-            updateCartCount();
-        }
+            if(matchedProduct) {
+                const details = window.getProcessedProductDetails(matchedProduct);
+                let stockNum = Number(matchedProduct.stock) || 0;
+                let jollyJokes = [
+                    "Semma choice boss! ",
+                    "Aaha, kandupidichiten boss!  ",
+                    "Tharamana porul ketaachi! ",
+                    "Sathiyama irukku boss! "
+                ];
+                let randomJoke = jollyJokes[Math.floor(Math.random() * jollyJokes.length)];
 
-        // TAMIL JOLLY AI ASSISTANT FUNCTION
-        window.sendAImessage = function() {
-            const inputField = document.getElementById('chatInput');
-            const msgBox = document.getElementById('chatMessages');
-            const text = inputField.value.trim().toLowerCase();
-            if (!text) return;
-
-            msgBox.innerHTML += `<div class="bg-gray-200 text-gray-800 p-2 rounded-lg max-w-[85%] ml-auto text-[10px]">${inputField.value}</div>`;
-            inputField.value = '';
+                if (stockNum <= 0) {
+                    botResponseText = `${randomJoke}<b>${matchedProduct.name}</b> irukku thaan, aana ippo stock <b>kaali</b> aagiruchu boss!`;
+                } else {
+                    let offerText = details.appliedOfferName ? ` (Offer: <b>${details.appliedOfferName}</b>)` : '';
+                    botResponseText = `${randomJoke}<b>${matchedProduct.name}</b> kadaila <b>irukku boss!</b><br>� Rate: <b>Rs.${details.finalPrice}</b> (${matchedProduct.unit || 'Kg'}) ${offerText}<br>� Stock available-a irukku!`;
+                    addCartButtonHtml = `<button onclick="addToCartFromAI('${matchedProduct.id}')" class="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow-xs transition flex items-center gap-1.5"><i class="fa-solid fa-cart-plus"></i> Add 1 ${matchedProduct.unit || 'Unit'} to Cart</button>`;
+                }
+            } else {
+                let negativeJokes = [
+                    "Aiyoo boss, antha porul ippo kadaila <b>illa</b>!",
+                    "Illave illa boss! Vera ethachu venumna kelu tharen."
+                ];
+                botResponseText = negativeJokes[Math.floor(Math.random() * negativeJokes.length)];
+            }
 
             setTimeout(() => {
-                let aiReply = "ஹா ஹா, என்னாச்சு பாஸ்? புரியலையே! உங்களுக்கு என்ன பொருள் வேணும்னு தெளிவா கேளுங்க, உடனே தேடித் தர்றேன்! 😎✨";
+                chatBoxContainer.innerHTML += `
+                    <div class="bg-purple-100 text-purple-800 p-2.5 rounded-xl max-w-[85%] self-start font-medium leading-relaxed shadow-xs space-y-1">
+                        <div>${botResponseText}</div>
+                        ${addCartButtonHtml}
+                    </div>
+                `;
+                chatBoxContainer.scrollTop = chatBoxContainer.scrollHeight;
+            }, 300);
+
+            userInputField.value = '';
+            chatBoxContainer.scrollTop = chatBoxContainer.scrollHeight;
+        };
+
+        window.addToCartFromAI = function(productId) {
+            addToCart(productId);
+            alert("Porul ungaloda cart-la add aayiduchu boss! ");
+        };
+
+        // ================= SMART 1+1 / QUANTITY CART LOGIC =================
+        window.addToCart = function(productId) {
+            const selectedProduct = products.find(item => item.id === productId);
+            if(selectedProduct) {
+                let stockNum = Number(selectedProduct.stock) || 0;
+                if(stockNum <= 0) {
+                    alert("Ayyo boss, intha product-ku ippo stock illa!");
+                    return;
+                }
                 
-                if (text.includes('hi') || text.includes('hello') || text.includes('வணக்கம்')) {
-                    aiReply = "வணக்கம் பாஸ்! 😎 ASA ஷாப்பிங்கிற்கு உங்களை வரவேற்கிறேன். இன்னைக்கு என்ன ஸ்பெஷலா வாங்கப் போறோம்?";
-                } else if (text.includes('products') || text.includes('items') || text.includes('list') || text.includes('பொருள்')) {
-                    if (productsList.length > 0) {
-                        aiReply = "இதோ பாஸ் நம்ம கடையில இருக்குற மாசான பொருட்கள் லிஸ்ட்:\n" + productsList.map(p => `• ${p.name} - Rs.${p.price} / ${p.unit}`).join('\n');
-                    } else {
-                        aiReply = "ஐயையோ, இப்போதைக்கு கடையில பொருட்கள் எதுவும் இல்ல பாஸ்!";
+                const details = window.getProcessedProductDetails(selectedProduct);
+                let existingItem = cart.find(item => item.id === productId);
+                
+                let effectivePrice = details.finalPrice;
+                let offerName = details.appliedOfferName;
+
+                if(existingItem) {
+                    if(existingItem.qty >= stockNum) {
+                        alert("Ayyo boss, stock limit-ku mela add panna mudiyathu!");
+                        return;
                     }
-                } else if (text.includes('offer') || text.includes('ஆஃபர்')) {
-                    const offerProducts = productsList.filter(p => p.offer);
-                    if (offerProducts.length > 0) {
-                        aiReply = "அட هா! செம ஆஃபர் விலையில் கலக்கும் பொருட்கள் இதோ பாஸ்:\n" + offerProducts.map(p => `• ${p.name} - ${p.offer} (விலை: Rs.${p.price})`).join('\n');
-                    } else {
-                        aiReply = "இப்போதைக்கு ஸ்பெஷல் ஆஃபர் எதுவும் ஓடல பாஸ், சீக்கிரமே புது ஆஃபர்ஸ் வரும்!";
-                    }
+                    existingItem.qty += 1;
                 } else {
-                    const found = productsList.filter(p => p.name.toLowerCase().includes(text) || p.category.toLowerCase().includes(text));
-                    if (found.length > 0) {
-                        aiReply = "நீங்கள் தேடிய பொருள் கடையில இருக்கு பாஸ்:\n" + found.map(p => `• ${p.name} - Rs.${p.price} / ${p.unit} (Stock: ${p.stock})`).join('\n');
-                    } else {
-                        aiReply = `மன்னிக்கணும் பாஸ்! "${text}" என்ற பெயரில் கடையில எந்தப் பொருளும் இப்போ இல்ல! வேற எதாவது கேட்டு பாருங்க! 😅`;
-                    }
+                    cart.push({
+                        ...selectedProduct,
+                        price: effectivePrice,
+                        appliedOffer: offerName || 'Standard',
+                        qty: 1
+                    });
                 }
 
-                msgBox.innerHTML += `<div class="bg-purple-100 text-purple-900 p-2 rounded-lg max-w-[85%] text-[10px]" style="white-space: pre-line;">${aiReply}</div>`;
-                msgBox.scrollTop = msgBox.scrollHeight;
-            }, 500);
-        }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                render();
+            }
+        };
 
-        window.openCheckout = function() {
-            if (cart.length === 0) return alert("Your cart is empty!");
-            document.getElementById('cartTab').classList.add('hide');
-            document.getElementById('checkoutSection').classList.remove('hide');
-        }
+        window.increaseCartQty = function(productId) {
+            const selectedProduct = products.find(item => item.id === productId);
+            let stockNum = Number(selectedProduct.stock) || 0;
+            let cartItem = cart.find(item => item.id === productId);
+            
+            if(cartItem) {
+                if(cartItem.qty >= stockNum) {
+                    alert("Ayyo boss, stock limit-ku mela add panna mudiyathu!");
+                    return;
+                }
+                cartItem.qty += 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                render();
+                if(!document.getElementById('cartTab').classList.contains('hidden')) {
+                    renderCart();
+                }
+            }
+        };
 
-        window.placeOrderWhatsApp = async function() {
-            const name = document.getElementById('custName').value;
-            const phone = document.getElementById('custPhone').value;
-            const address = document.getElementById('custAddress').value;
-            const payMethod = document.getElementById('payMethod').value;
+        window.decreaseCartQty = function(productId) {
+            let cartIndex = cart.findIndex(item => item.id === productId);
+            if(cartIndex !== -1) {
+                cart[cartIndex].qty -= 1;
+                if(cart[cartIndex].qty <= 0) {
+                    cart.splice(cartIndex, 1);
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                render();
+                if(!document.getElementById('cartTab').classList.contains('hidden')) {
+                    renderCart();
+                }
+            }
+        };
 
-            if (!name || !phone || !address) return alert("Please fill all customer details!");
-            if (cart.length === 0) return alert("Your cart is empty!");
+        window.updateCartCount = function() {
+            let totalQtyCount = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+            document.getElementById('cartCount').textContent = totalQtyCount;
+        };
 
-            let totalAmt = 0;
-            cart.forEach(item => {
-                let payableQty = item.qty;
-                if (item.offer === '1+1 Free') payableQty = Math.ceil(item.qty / 2);
-                totalAmt += item.price * payableQty;
+        window.switchTab = function(targetTabName) {
+            const tabList = ['home', 'ai', 'cart', 'admin'];
+            tabList.forEach(tabKey => {
+                let tabElement = document.getElementById(tabKey + 'Tab');
+                if(tabElement) tabElement.classList.add('hidden');
+                
+                let navBtn = document.getElementById('nav' + tabKey.charAt(0).toUpperCase() + tabKey.slice(1));
+                if(navBtn && tabKey !== 'admin') {
+                    navBtn.classList.remove('text-purple-600');
+                    navBtn.classList.add('text-gray-400');
+                }
             });
 
-            try {
-                for (const item of cart) {
-                    const productRef = ref(db, `products/${item.id}`);
-                    const newStock = item.stock - item.qty;
-                    await update(productRef, { stock: newStock >= 0 ? newStock : 0 });
+            let activeTab = document.getElementById(targetTabName + 'Tab');
+            if(activeTab) activeTab.classList.remove('hidden');
+
+            let activeNav = document.getElementById('nav' + targetTabName.charAt(0).toUpperCase() + targetTabName.slice(1));
+            if(activeNav) {
+                activeNav.classList.remove('text-gray-400');
+                activeNav.classList.add('text-purple-600');
+            }
+
+            if(targetTabName === 'cart') renderCart();
+            if(targetTabName === 'home' || targetTabName === 'admin') render();
+        };
+
+        // ================= PROMO CODE SYSTEM (MIN Rs.2000 CONDITION) =================
+        window.applyPromoCode = function() {
+            let codeInput = document.getElementById('promoInput').value.trim().toUpperCase();
+            let msgEl = document.getElementById('promoMsg');
+            let errEl = document.getElementById('promoError');
+
+            // Calculate current actual total first
+            let currentTotal = 0;
+            cart.forEach(item => {
+                let qty = item.qty || 1;
+                let chargeable = qty;
+                if(item.appliedOffer && item.appliedOffer.includes('1+1')) {
+                    chargeable = Math.floor(qty / 2) + (qty % 2);
+                }
+                currentTotal += Number(item.price) * chargeable;
+            });
+
+            if(codeInput === 'ASA50') {
+                if(currentTotal >= 2000) {
+                    activePromo = { code: 'ASA50', type: 'flat', val: 50, label: 'ASA50 (Flat Rs.50 OFF)' };
+                    msgEl.textContent = " Promo Code Applied Successfully! Rs.50 Saved.";
+                    msgEl.classList.remove('hidden');
+                    errEl.classList.add('hidden');
+                    renderCart();
+                } else {
+                    activePromo = null;
+                    errEl.textContent = " ASA50 valid only for purchases above Rs.2000 boss!";
+                    errEl.classList.remove('hidden');
+                    msgEl.classList.add('hidden');
+                    renderCart();
+                }
+            } else {
+                alert("Invalid Promo Code boss!");
+                activePromo = null;
+                msgEl.classList.add('hidden');
+                errEl.classList.add('hidden');
+                renderCart();
+            }
+        };
+
+        window.renderCart = function() {
+            const cartListContainer = document.getElementById('cartList');
+            cartListContainer.innerHTML = cart.length ? '' : '<p class="text-center text-gray-400 py-8 text-xs">Your cart is empty</p>';
+            
+            let cumulativeSubtotal = 0;
+            cart.forEach((cartItem, itemIndex) => {
+                let itemQty = cartItem.qty || 1;
+                
+                let chargeableQty = itemQty;
+                if(cartItem.appliedOffer && cartItem.appliedOffer.includes('1+1')) {
+                    let pairs = Math.floor(itemQty / 2);
+                    let remainder = itemQty % 2;
+                    chargeableQty = pairs + remainder;
                 }
 
-                let msg = `🛍️ *NEW ORDER - ASA Shopping*%0A%0A`;
-                msg += `👤 *Customer:* ${name}%0A`;
-                msg += `📞 *Phone:* ${phone}%0A`;
-                msg += `📍 *Address:* ${address}%0A`;
-                msg += `💳 *Payment:* ${payMethod}%0A%0A*Items:*%0A`;
-                cart.forEach(item => {
-                    let payableQty = item.qty;
-                    if (item.offer === '1+1 Free') payableQty = Math.ceil(item.qty / 2);
-                    msg += `- ${item.name} (${item.qty} ${item.unit}) : Rs.${item.price * payableQty}%0A`;
-                });
-                msg += `%0A*Total Amount:* Rs.${totalAmt}`;
+                let itemTotalPrice = Number(cartItem.price) * chargeableQty;
+                cumulativeSubtotal += Number(cartItem.price) * itemQty;
+                
+                let offerBadgeHtml = '';
+                if(cartItem.appliedOffer && cartItem.appliedOffer !== 'Standard') {
+                    offerBadgeHtml = `<span class="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-bold mt-0.5 inline-block"> Offer: ${cartItem.appliedOffer} (Auto adjusted)</span>`;
+                }
 
-                const adminWhatsAppNumber = "918807964502";
-                cart = [];
-                saveCartToStorage();
-                updateCartCount();
-                loadProducts();
+                cartListContainer.innerHTML += `
+                    <div class="bg-white p-3 rounded-2xl shadow-xs border border-gray-100 flex justify-between items-center text-xs">
+                        <div class="space-y-0.5">
+                            <span class="font-bold text-gray-800">${cartItem.name}</span>
+                            <p class="text-purple-600 font-bold">Rs.${cartItem.price} x ${itemQty} = <span class="text-black font-black">Rs.${itemTotalPrice}</span></p>
+                            ${offerBadgeHtml}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center bg-slate-100 rounded-lg px-1 py-0.5 font-bold">
+                                <button onclick="decreaseCartQty('${cartItem.id}')" class="px-2 py-0.5 text-gray-600 hover:text-black"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                <span class="px-1">${itemQty}</span>
+                                <button onclick="increaseCartQty('${cartItem.id}')" class="px-2 py-0.5 text-gray-600 hover:text-black"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                            </div>
+                            <button onclick="removeFromCart(${itemIndex})" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let actualPayableTotal = 0;
+            cart.forEach(item => {
+                let qty = item.qty || 1;
+                let chargeable = qty;
+                if(item.appliedOffer && item.appliedOffer.includes('1+1')) {
+                    chargeable = Math.floor(qty / 2) + (qty % 2);
+                }
+                actualPayableTotal += Number(item.price) * chargeable;
+            });
+
+            // Re-verify min Rs.2000 condition if activePromo is ASA50
+            if(activePromo && activePromo.code === 'ASA50' && actualPayableTotal < 2000) {
+                activePromo = null;
+                document.getElementById('promoMsg').classList.add('hidden');
+                let errEl = document.getElementById('promoError');
+                errEl.textContent = " Promo removed because total dropped below Rs.2000!";
+                errEl.classList.remove('hidden');
+            }
+
+            let promoDiscountValue = 0;
+            if(activePromo) {
+                if(activePromo.type === 'flat') {
+                    promoDiscountValue = activePromo.val;
+                }
+                actualPayableTotal = Math.max(0, actualPayableTotal - promoDiscountValue);
+                document.getElementById('discountRow').classList.remove('hidden');
+                document.getElementById('discountLabel').textContent = `Promo (${activePromo.label}):`;
+                document.getElementById('discountAmount').textContent = `-Rs.${promoDiscountValue}`;
+            } else {
+                document.getElementById('discountRow').classList.add('hidden');
+            }
+            
+            document.getElementById('subTotal').textContent = `Rs.${actualPayableTotal + promoDiscountValue}`;
+            document.getElementById('totalPrice').textContent = `Rs.${actualPayableTotal}`;
+            document.getElementById('cartTotalBox').classList.toggle('hidden', cart.length === 0);
+        };
+
+        window.removeFromCart = function(indexPosition) {
+            cart.splice(indexPosition, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            renderCart();
+            render();
+        };
+
+        window.checkout = function() {
+            let orderMessage = "Hello boss, I would like to order these items from ASA Shopping:\n\n";
+            let actualPayableTotal = 0;
+            
+            cart.forEach((item, index) => {
+                let itemQty = item.qty || 1;
+                let chargeable = itemQty;
+                if(item.appliedOffer && item.appliedOffer.includes('1+1')) {
+                    chargeable = Math.floor(itemQty / 2) + (itemQty % 2);
+                }
+                let itemTotalPrice = Number(item.price) * chargeable;
+                orderMessage += `${index + 1}. ${item.name} - Rs.${item.price} x ${itemQty} = Rs.${itemTotalPrice} (${item.appliedOffer || ''})\n`;
+                actualPayableTotal += itemTotalPrice;
+            });
+
+            let promoDiscountValue = 0;
+            if(activePromo) {
+                if(activePromo.type === 'flat') {
+                    promoDiscountValue = activePromo.val;
+                }
+                actualPayableTotal = Math.max(0, actualPayableTotal - promoDiscountValue);
+                orderMessage += `Promo Applied: ${activePromo.code} (-Rs.${promoDiscountValue})\n`;
+            }
+
+            orderMessage += `\nTotal Payable: Rs.${actualPayableTotal}\nPlease confirm my order!`;
+            window.open(`https://wa.me/918807964502?text=${encodeURIComponent(orderMessage)}`, '_blank');
+        };
+
+        window.shareProduct = function(productName, productPrice, productImage) {
+            let shareMessage = `Check out this product on ASA Shopping!\n\n*${productName}*\nPrice: Rs.${productPrice}\nImage: ${productImage}`;
+            if(navigator.share) {
+                navigator.share({ title: productName, text: shareMessage }).catch((error) => console.log(error));
+            } else {
+                window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+            }
+        };
+
+        window.openAdminFormForAdd = function() {
+            if(!isAdmin) {
+                alert("Please login as Admin first!");
+                return;
+            }
+            document.getElementById('pEditId').value = '';
+            document.getElementById('pName').value = '';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pStock').value = '';
+            document.getElementById('pImage').value = '';
+            document.getElementById('pOfferType').value = 'none';
+            document.getElementById('pExpiry').value = '';
+            toggleOfferFields();
+            
+            document.getElementById('adminFormTitle').textContent = 'Admin Panel - Add Product';
+            document.getElementById('saveBtn').textContent = 'Save Product';
+            switchTab('admin');
+        };
+
+        window.editProduct = function(productId) {
+            if(!isAdmin) return;
+            let targetProduct = products.find(x => x.id === productId);
+            if(targetProduct) {
+                document.getElementById('pEditId').value = targetProduct.id;
+                document.getElementById('pName').value = targetProduct.name || '';
+                document.getElementById('pPrice').value = targetProduct.price || '';
+                document.getElementById('pStock').value = targetProduct.stock || '';
+                document.getElementById('pUnit').value = targetProduct.unit || 'Kg';
+                document.getElementById('pCategory').value = targetProduct.category || 'Supermarket';
+                document.getElementById('pImage').value = targetProduct.image || '';
+                document.getElementById('pExpiry').value = targetProduct.expiryTime || '';
+                
+                let oType = targetProduct.offerType || 'none';
+                document.getElementById('pOfferType').value = oType;
+                toggleOfferFields();
+
+                if(oType === 'percentage') document.getElementById('pPercVal').value = targetProduct.offerVal || '50';
+                if(oType === 'custom_price') document.getElementById('pOfferPriceVal').value = targetProduct.offerVal || '';
+                if(oType === 'quantity_deal') document.getElementById('pQtyDealVal').value = targetProduct.offerVal || '1+1 Free';
+                if(oType === 'manual_text') document.getElementById('pManualVal').value = targetProduct.offerVal || '';
+
+                document.getElementById('adminFormTitle').textContent = 'Admin Panel - Edit Product';
+                document.getElementById('saveBtn').textContent = 'Update Product';
+                switchTab('admin');
+            }
+        };
+
+        window.saveProduct = async function() {
+            if(!isAdmin) return;
+
+            const editId = document.getElementById('pEditId').value;
+            const productName = document.getElementById('pName').value.trim();
+            const productPrice = document.getElementById('pPrice').value.trim();
+            const productStock = document.getElementById('pStock').value.trim();
+            const productUnit = document.getElementById('pUnit').value;
+            const productCategory = document.getElementById('pCategory').value;
+            const productOfferType = document.getElementById('pOfferType').value;
+            const productExpiryTime = document.getElementById('pExpiry').value;
+            const productImage = document.getElementById('pImage').value.trim();
+
+            let offerVal = "";
+            if (productOfferType === 'percentage') offerVal = document.getElementById('pPercVal').value;
+            else if (productOfferType === 'custom_price') offerVal = document.getElementById('pOfferPriceVal').value;
+            else if (productOfferType === 'quantity_deal') offerVal = document.getElementById('pQtyDealVal').value;
+            else if (productOfferType === 'manual_text') offerVal = document.getElementById('pManualVal').value.trim();
+
+            if(!productName || !productPrice || !productImage) {
+                alert("Name, price, image fields podanum boss!");
+                return;
+            }
+
+            try {
+                let productPayload = {
+                    name: productName,
+                    price: productPrice,
+                    stock: productStock || '10',
+                    unit: productUnit,
+                    category: productCategory,
+                    offerType: productOfferType,
+                    offerVal: offerVal,
+                    expiryTime: productExpiryTime ? productExpiryTime : "",
+                    image: productImage
+                };
+
+                if(editId) {
+                    await set(ref(db, 'products/' + editId), productPayload);
+                    alert("Product updated successfully boss!");
+                } else {
+                    await push(ref(db, 'products'), productPayload);
+                    alert("Product saved successfully boss!");
+                }
+                
+                loadData();
                 switchTab('home');
+            } catch(error) {
+                console.error("Error saving product:", error);
+                alert("Error saving product!");
+            }
+        };
 
-                window.open(`https://wa.me/${adminWhatsAppNumber}?text=${msg}`, '_blank');
-                alert("Order placed successfully!");
-            } catch (err) {
-                console.error(err);
-                alert("Failed to process order.");
-            }
-        }
-
-        window.switchTab = function(tab) {
-            document.getElementById('homeTab').classList.add('hide');
-            document.getElementById('shopTab').classList.add('hide');
-            document.getElementById('cartTab').classList.add('hide');
-            document.getElementById('guideTab').classList.add('hide');
-            document.getElementById('adminTab').classList.add('hide');
-            document.getElementById('checkoutSection').classList.add('hide');
-
-            document.getElementById('navHome').className = "flex flex-col items-center text-gray-400 font-bold text-[9px]";
-            document.getElementById('navShop').className = "flex flex-col items-center text-gray-400 font-bold text-[9px]";
-            document.getElementById('navGuide').className = "flex flex-col items-center text-gray-400 font-bold text-[9px]";
-
-            if (tab === 'home') {
-                document.getElementById('homeTab').classList.remove('hide');
-                document.getElementById('navHome').className = "flex flex-col items-center text-purple-600 font-bold text-[9px]";
-            }
-            if (tab === 'shop') {
-                document.getElementById('shopTab').classList.remove('hide');
-                document.getElementById('navShop').className = "flex flex-col items-center text-purple-600 font-bold text-[9px]";
-            }
-            if (tab === 'cart') {
-                document.getElementById('cartTab').classList.remove('hide');
-            }
-            if (tab === 'guide') {
-                document.getElementById('guideTab').classList.remove('hide');
-                document.getElementById('navGuide').className = "flex flex-col items-center text-purple-600 font-bold text-[9px]";
-            }
-            if (tab === 'admin') {
-                document.getElementById('adminTab').classList.remove('hide');
-            }
-        }
-
-        loadProducts();
+        applyAdminState();
+        loadData();
         updateCartCount();
-        initAutoScrollBanner();
     </script>
 </body>
 </html>
